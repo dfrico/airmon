@@ -14,16 +14,20 @@ const zones = {
   // TODO: scrapear el resto
 }
 
-function airmon(station = '08') {
+function airmon(station, callback) {
   // Calling from node, not as import:
-  if(process.argv[1].indexOf('air.js') != -1){
+
+  if(process.argv[1].indexOf('air.js') != -1 &&
+    process.argv.indexOf('-v') != -1){
 
     // We can pass station as argument
-    if(!process.argv[2]) {
+
+    param = process.argv.filter(a => !isNaN(a))
+    if(param.length == 0){
       console.log("\nEstaciones disponibles:\n%s.\nPor defecto: %s",
         Object.values(zones).join(', '), zones[station]);
     }
-    else station = process.argv[2]
+    else station = param[0]
 
     detail(station, draw=true)
     console.log('\nGetting data from station %s - %s\n', station, zones[station])
@@ -38,17 +42,17 @@ function airmon(station = '08') {
     }
 
     try {
-      var dominantColor = ColorThief.getColor(sourceImage);
-      let [r, g, b] = dominantColor
+      let [r, g, b] = ColorThief.getColor(sourceImage);
       let text = ""
 
       // TODO: return promise with result
       if (g > r && g > b)
-        return('\x1b[32m%s\x1b[0m', '\nAir quality is fine');
+        text = ('\x1b[32m' + '\nAir quality is fine') + '\x1b[0m';
       else if (r == g)
-        return('\x1b[33m%s\x1b[0m', '\nAir quality could be better');
-      else return('No idea, code is: %s', String(dominantColor));
+        text = ('\x1b[33m' + '\nAir quality could be better') + '%s\x1b[0m';
+      else text = ('No idea, code is: '+ String(dominantColor));
       //TODO: check other color codes
+      callback(text)
 
     } catch (err) {
       console.log('err: ' + err)
@@ -70,7 +74,7 @@ function detail(station, draw=false) {
   return detailURL
 }
 
-airmon()
+airmon('08', (value)=>console.log(value))
 
 exports.air = airmon;
 exports.graph = detail;

@@ -5,15 +5,33 @@ const graph = airjs.graph;
 const scrapper = require('./scrapper.js')
 const particles = scrapper.particles;
 
+const fs = require('fs');
 const TeleBot = require('telebot');
 const bot = new TeleBot(process.env.telebot);
 
 let data = {};
 
 let station = '49'
-airmon(station)
-graph(station)
-particles(station)
+// airmon(station)
+// graph(station)
+// particles(station)
+
+function loadData(){
+  fs.readFile('users.json', (err, data) => {
+    if (err) throw err;
+    let users = JSON.parse(data);
+    console.log(users);
+  });
+}
+
+function saveData(){
+  let data = JSON.stringify(data, null, 2);
+
+  fs.writeFile('users.json', data, (err) => {
+      if (err) throw err;
+      console.log('Data written to file');
+  });
+}
 
 bot.on(['/start', '/hello'], (msg) => {
   text = 'Welcome! Send me your location (or not) \
@@ -55,11 +73,18 @@ bot.on(/no/, (msg) => {
  * pseudo-cron
  */
 bot.on('tick', () => {
-  if (!data.chat_id) return;
+  if (!data.chat_id ) return;
 
   // text = airmon('49')
+  text = "probando..."
 
   return bot.sendMessage(data.chat_id, text)
+    .catch(function(err) {
+      if(err.error_code && err.error_code == 403){
+        console.log('User asked bot to stop')
+        bot.stop();
+      }
+    });
 });
 
 bot.start();
