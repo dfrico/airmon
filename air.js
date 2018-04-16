@@ -45,13 +45,20 @@ function airmon(station, callback) {
       let [r, g, b] = ColorThief.getColor(sourceImage);
       let text = ""
 
-      // TODO: return promise with result
-      if (g > r && g > b)
-        text = ('\x1b[32m' + '\nAir quality is fine') + '\x1b[0m';
-      else if (r == g)
-        text = ('\x1b[33m' + '\nAir quality could be better') + '%s\x1b[0m';
-      else text = ('No idea, code is: '+ String(dominantColor));
-      //TODO: check other color codes
+      if (g > r && g > b){
+        text = 'Air quality is fine.';
+        // colors!
+        if(process.argv.indexOf('-c') != -1)
+          text = '\x1b[32m\n' + text + '\x1b[0m';
+      } else if (r == g) {
+        text = 'Air quality could be better.';
+        if(process.argv.indexOf('-c') != -1)
+          text = '\x1b[33m\n' + text + '\x1b[0m';
+      } else {
+        console.log(r, g, b);
+        text = 'Air quality is probably bad.';
+      }
+
       callback(text)
 
     } catch (err) {

@@ -10,8 +10,8 @@ const TeleBot = require('telebot');
 const bot = new TeleBot(process.env.telebot);
 
 let data = {};
+let lastTransmission = null;
 
-let station = '49'
 // airmon(station)
 // graph(station)
 // particles(station)
@@ -25,7 +25,7 @@ function loadData(){
 }
 
 function saveData(){
-  let data = JSON.stringify(data, null, 2);
+  let data = JSON.stringify(data);
 
   fs.writeFile('users.json', data, (err) => {
       if (err) throw err;
@@ -44,7 +44,9 @@ bot.on(['/start', '/hello'], (msg) => {
     resize: true
   });
 
-  data.chat_id = msg.chat.id;
+  // saving id and nearest station (def '49': retiro)
+  data[msg.chat.id] = '49';
+  console.log('Now '+Object.keys(data).length+' users')
 
   return bot.sendMessage(msg.from.id, text, {
     replyMarkup
@@ -73,18 +75,34 @@ bot.on(/no/, (msg) => {
  * pseudo-cron
  */
 bot.on('tick', () => {
-  if (!data.chat_id ) return;
 
-  // text = airmon('49')
-  text = "probando..."
+  let d = new Date();
 
-  return bot.sendMessage(data.chat_id, text)
-    .catch(function(err) {
-      if(err.error_code && err.error_code == 403){
-        console.log('User asked bot to stop')
-        bot.stop();
-      }
+  if(d.getMinutes()==0 &&
+    d.getHours() != lastTransmission){
+
+    // foreach user
+    Object.keys(data).map((chat_id) => {
+      // get airmon data
+      airmon(data[chat_id], (text) => {
+        // send update by msg
+        bot.sendMessage(chat_id, text)
+          // verbose success
+          .then(() => console.log('msg sent to'+chat_id))
+          // bot blocked by user
+          .catch(function(err) {
+            if(err.error_code && err.error_code == 403){
+              console.log('User '+chat_id+' asked bot to stop')
+              delete data[chat_id];
+              console.log('Now '+Object.keys(data).length+' users')
+            }
+          });
+      });
     });
+  }
+
+  lastTransmission = d.getHours();
+
 });
 
 bot.start();
