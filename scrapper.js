@@ -10,6 +10,9 @@ function processData(rows, station) {
   // const station = '49'
   let filtered = rows.filter(r => r.split(';')[2] == station);
 
+  // console.log(rows[0])
+  // console.log(filtered)
+
   const magnitudes = {
     '1': 'SO2',
     '6': 'CO',
@@ -30,10 +33,48 @@ function processData(rows, station) {
     '44': 'Hexano'
   }
 
+  day = [];
+  while(day.length<24){
+    day.push([])
+  };
+
+  filtered.map((row, i) => {
+
+    attr = row.split(";")
+    attr
+      .slice(8)
+      .filter(v => !isNaN(v))
+      .map((value, j) =>{
+        particula = magnitudes[attr[3]]
+        day[j].push({ [particula]: value })
+        // console.log("fila:", i, "hora:", j+1, magnitudes[attr[3]], value)
+    });
+  });
+
+  /*
+  * printing
+  */
+
+  console.log(`Data for ${zones[station]}`)
+
+  day.map((d, i) => {
+    // convert to str
+    str = d
+      .slice(0,6) //remove this to avoid filtering some variables (too much noise)
+      .reduce((a,b) => {
+        values = Object.entries(b)
+        return `${a}${values[0][0]}: ${values[0][1]} umg. `
+      }, `${i}h\t `)
+    console.log(str, "etc")
+  });
+
+  /*
+  console.log('last data:')
   filtered.map((row) => {
     let attr = row.split(';')
     console.log(magnitudes[attr[3]] + ': ' + attr[index] + ' ug/m3')
   })
+  */
 }
 
 function particles(station = '8') {
@@ -93,3 +134,16 @@ function particles(station = '8') {
 }
 
 exports.particles = particles;
+
+const zones = {
+  '47': 'Mendez Alvaro',
+  '49': 'Retiro',
+  '8': 'Escuelas Aguirre',
+  '4': 'Plaza de España',
+  '35': 'Plaza del Carmen'
+  // TODO: scrapear el resto
+}
+
+for(z of Object.keys(zones)){
+  particles(z)
+}

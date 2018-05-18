@@ -104,19 +104,17 @@ for e in estaciones:
 	body = json.loads(r.text)
 
 	if(body["estado"]==404):
-		# print("Err getting data from {} ({})".format(e["nombre"], body["estado"]))
+		print("Err getting data from {} ({})".format(e["nombre"], body["estado"]))
 		# print("Response: {}".format(body["descripcion"]))
 		continue
 	else:
-		# print("{} {}".format(e["nombre"], body["descripcion"]))
+		print("{} {}".format(e["nombre"], body["descripcion"]))
 		url_data = body["datos"]
 
 	r = requests.get(url_data);
 	data = json.loads(r.text)
 
 	# data: lista con 23 valores, 1 por hora
-	# current:
-	data = [data[-1]]
 
 	for d in data:
 		date = parse(d["fint"]).strftime("%d-%m %H:%M")
@@ -142,3 +140,4 @@ for e in estaciones:
 
 		print(date, info);
 		# print(raw)
+	print()
