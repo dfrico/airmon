@@ -136,14 +136,35 @@ function particles(station = '8') {
 exports.particles = particles;
 
 const zones = {
-  '47': 'Mendez Alvaro',
-  '49': 'Retiro',
   '8': 'Escuelas Aguirre',
   '4': 'Plaza de España',
-  '35': 'Plaza del Carmen'
-  // TODO: scrapear el resto
+  '11': 'Avda. Ramón y Cajal',
+  '16': 'Arturo Soria',
+  '17': 'Villaverde',
+  '18': 'Farolillo',
+  '24': 'Casa de Campo',
+  '27': 'Barajas Pueblo',
+  '35': 'Pza. del Carmen',
+  '36': 'Moratalaz',
+  '38': 'Cuatro Caminos',
+  '39': 'Barrio del Pilar',
+  '40': 'Vallecas',
+  '47': 'Mendez Alvaro',
+  '48': 'Castellana',
+  '49': 'Parque del Retiro',
+  '50': 'Plaza Castilla',
+  '54': 'Ensanche de Vallecas',
+  '55': 'Urb. Embajada',
+  '56': 'Pza. Fernández Ladreda',
+  '57': 'Sanchinarro',
+  '58': 'El Pardo',
+  '59': 'Juan Carlos I',
+  '60': 'Tres Olivos'
 }
 
-for(z of Object.keys(zones)){
+console.log(`${Object.keys(zones).length} zones`)
+// (25 tablas)
+
+for(z of Object.keys(zones).splice(0,3)){
   particles(z)
 }

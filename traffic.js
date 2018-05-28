@@ -31,6 +31,11 @@ function traffic() {
         console.log(`${size} entries.`);
         for (var i = 0; i < size; i++) {
 
+          /*
+          attr: codigo, descripcion, accesoAsociado, intensidad, ocupacion,
+          carga, nivelServicio, intensidadSat, error, subarea
+          */
+
           station = locations.filter(l => l[0].slice(1,l[0].length-1)==data[i]["codigo"][0]);
           station = station[0] ? station[0] : null;
           console.log(`Ocupación: ${data[i]["intensidad"][0]}/${data[i]["intensidadSat"][0]}.\
