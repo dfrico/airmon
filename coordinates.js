@@ -65,7 +65,7 @@ function init(){
       })
 
     console.log("Loading coordinates")
-    console.log('Codigo;\tNombre;\tx1;\ty1;\tx2;\ty2')
+    console.log('Codigo;\tNombre;\ty1;\tx1;\ty2;\tx2')
     coord()
   });
 }
