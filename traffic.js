@@ -6,12 +6,8 @@ const parseString = require('xml2js').parseString;
 function traffic() {
   let options = {
     hostname: 'informo.munimadrid.es',
-    //port: 443,
     path: '/informo/tmadrid/pm.xml',
-    method: 'GET',
-    headers: {
-      // 'Accept': 'application/xml'
-    }
+    method: 'GET'
   };
 
   const req = http.get(options, (res) => {
@@ -23,11 +19,12 @@ function traffic() {
       xml += d;
     }).on('end', () => {
       process.stdout.write("\n");
-      // console.log(xml)
+
       parseString(xml, function (err, result) {
+        if(err) throw err;
         let data = result["pms"]["pm"];
-        // console.log(Object.keys(result))
         let size = Object.keys(data).length;
+        let fileData = []
         console.log(`${size} entries.`);
 
         for (var i = 0; i < size; i++) {
@@ -38,14 +35,17 @@ function traffic() {
           */
           try{
             let station = locations.filter(l => l[0].slice(1,l[0].length-1)==data[i]["codigo"][0]);
-            // console.log(data[i]["codigo"][0])
             station = station[0] ? station[0] : [];
 
-            zone = getNN(station[4].replace(',','.'), station[5].replace(',','.'))
-            // console.log(`Ocupación: ${data[i]["intensidad"][0]}/${data[i]["intensidadSat"][0]}.\
-// \tCoord x:${station[4]}, y:${station[5]}.\tZona: ${zone}.\tNombre: "${data[i]["descripcion"][0]}".`)
-
-            zones[zone].push({[data[i]["codigo"][0]]: `${((Number(data[i]["intensidad"][0])/Number(data[i]["intensidadSat"][0]))*100).toFixed(2)}%` })
+            let zone = getNN(station[4].replace(',','.'), station[5].replace(',','.'))
+            let ratio = ((Number(data[i]["intensidad"][0])/Number(data[i]["intensidadSat"][0]))*100).toFixed(2);
+            let row = [zone, data[i]["intensidad"][0], data[i]["intensidadSat"][0], String(ratio).replace('.',','), station[4], station[5], data[i]["descripcion"][0]]
+            fileData.push(row)
+            /*
+            console.log(`Ocupación: ${data[i]["intensidad"][0]}/${data[i]["intensidadSat"][0]}.\
+ \tCoord x:${station[4]}, y:${station[5]}.\tZona: ${zone}.\tNombre: "${data[i]["descripcion"][0]}".`)
+            */
+            zones[zone].push({[data[i]["codigo"][0]]: `${ratio}%` })
 
           }
           catch(err){
@@ -53,9 +53,23 @@ function traffic() {
           }
         }
 
+        // Saving traffic data in file
+        /*
+        csvHeaders = "zone;int;intmax;%;x;y;name\n"
+        fs.writeFile('traffic.csv', csvHeaders+fileData.map(d => d.join(";")).join('\n'), (err) => {
+          if (err) throw err;
+          console.log('File saved');
+        });
+        */
+
+        let total = 0;
+
         for(z of Object.keys(zones)){
+          total += zones[z].length;
           console.log(`${z}: ${zones[z].length}`)
         }
+
+        console.log(`${total} out of ${size}. ${size-total} entries filtered (no coordinates available)`)
       });
     });
 
