@@ -61,3 +61,4 @@ typings/
 .DS_Store
 mad/
 .ipynb_checkpoints/
+.swp
