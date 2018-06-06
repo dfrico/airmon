@@ -1,76 +1,75 @@
-const https = require('https');
-const http = require('http');
-const fs = require('fs');
+const https = require("https");
+const fs = require("fs");
 
 function parseDeg(value) {
-  return value
-    .split(' ')
-    .map(n =>
-      n.split('')
-        .filter(m => !isNaN(m)||(m===','))
-        .join('')
-        .replace(',','.')
-    )
-    .map(n => Number(n))
+    return value
+        .split(" ")
+        .map(n =>
+            n.split("")
+                .filter(m => !isNaN(m)||(m===","))
+                .join("")
+                .replace(",",".")
+        )
+        .map(n => Number(n));
 }
 
-function coord() {
+function coord(locations) {
 
-  for(l of locations){
+    for(let l of locations){
 
-    ((location) => {
-      let [code, name, x_, y_] = l;
+        ((location) => {
+            let [code, name, x_, y_] = location;
 
-      url = `https://epsg.io/trans?x=${x_}&y=${y_}&s_srs=4326&t_srs=25830`;
-      const req = https.get(url, (res) => {
-        data = ""
-        res.on('data', (d) => {
-          data += d;
-        }).on('end', (d) => {
-          // console.log(data)
-          let {x, y} = JSON.parse(data);
-          console.log(`${code};${name};${y_};${x_};${y};${x}`);
-        });
-      });
+            let url = `https://epsg.io/trans?x=${x_}&y=${y_}&s_srs=4326&t_srs=25830`;
+            const req = https.get(url, (res) => {
+                let data = "";
+                res.on("data", (d) => {
+                    data += d;
+                }).on("end", () => {
+                    // console.log(data)
+                    let {x, y} = JSON.parse(data);
+                    console.log(`${code};${name};${y_};${x_};${y};${x}`);
+                });
+            });
 
-    req.on('error', (e) => {
-      console.log(url)
-      console.error(e);
-    });
+            req.on("error", (e) => {
+                console.log(url);
+                console.error(e);
+            });
 
-    req.end();
-    })(l)
-  }
+            req.end();
+        })(l);
+    }
 }
 
 function init(){
-  locations = [];
-  fs.readFile('./mad/air/ubicaciones.csv', 'utf8', (err, data) => {
-    if (err) throw err;
-    console.log("Loading locations")
-    data
-      .split('\n')
-      .map((d, i) => {
-        if(i>0){
-          attr = d.split(';')
+    let locations = [];
+    fs.readFile("./mad/air/ubicaciones.csv", "utf8", (err, data) => {
+        if (err) throw err;
+        console.log("Loading locations");
+        data
+            .split("\n")
+            .map((d, i) => {
+                if(i>0){
+                    let attr = d.split(";");
 
-          x = parseDeg(attr[2])
-          x = x.map(n => n*-1)
-          x = (x[0]+x[1]/60+x[2]/3600)
-          y = parseDeg(attr[3])
-          y = (y[0]+y[1]/60+y[2]/3600)
+                    let x = parseDeg(attr[2]);
+                    x = x.map(n => n*-1);
+                    x = (x[0]+x[1]/60+x[2]/3600);
+                    let y = parseDeg(attr[3]);
+                    y = (y[0]+y[1]/60+y[2]/3600);
 
-          locations.push([attr[0], attr[1], x, y])
-        }
-      })
+                    locations.push([attr[0], attr[1], x, y]);
+                }
+            });
 
-    console.log("Loading coordinates")
-    console.log('Codigo;\tNombre;\ty1;\tx1;\ty2;\tx2')
-    coord()
-  });
+        console.log("Loading coordinates");
+        console.log("Codigo;\tNombre;\ty1;\tx1;\ty2;\tx2");
+        coord(locations);
+    });
 }
 
-init()
+init();
 
 /*
 
