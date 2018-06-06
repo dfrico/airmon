@@ -29,9 +29,9 @@ function traffic() {
                 for (var i = 0; i < size; i++) {
 
                     /*
-          attr: codigo, descripcion, accesoAsociado, intensidad, ocupacion,
-          carga, nivelServicio, intensidadSat, error, subarea
-          */
+                    attr: codigo, descripcion, accesoAsociado, intensidad, ocupacion,
+                    carga, nivelServicio, intensidadSat, error, subarea
+                    */
                     try{
                         let station = locations.filter(l => l[0].slice(1,l[0].length-1)==data[i]["codigo"][0]);
                         station = station[0] ? station[0] : [];
@@ -41,9 +41,9 @@ function traffic() {
                         let row = [zone, data[i]["intensidad"][0], data[i]["intensidadSat"][0], String(ratio).replace(".",","), station[4], station[5], data[i]["descripcion"][0]];
                         fileData.push(row);
                         /*
-            console.log(`Ocupación: ${data[i]["intensidad"][0]}/${data[i]["intensidadSat"][0]}.\
- \tCoord x:${station[4]}, y:${station[5]}.\tZona: ${zone}.\tNombre: "${data[i]["descripcion"][0]}".`)
-            */
+                        console.log(`Ocupación: ${data[i]["intensidad"][0]}/${data[i]["intensidadSat"][0]}.\
+                        \tCoord x:${station[4]}, y:${station[5]}.\tZona: ${zone}.\tNombre: "${data[i]["descripcion"][0]}".`)
+                        */
                         zones[zone].push({[data[i]["codigo"][0]]: `${ratio}%` });
 
                     }
@@ -54,12 +54,12 @@ function traffic() {
 
                 // Saving traffic data in file
                 /*
-        csvHeaders = "zone;int;intmax;%;x;y;name\n"
-        fs.writeFile('traffic.csv', csvHeaders+fileData.map(d => d.join(";")).join('\n'), (err) => {
-          if (err) throw err;
-          console.log('File saved');
-        });
-        */
+                csvHeaders = "zone;int;intmax;%;x;y;name\n"
+                fs.writeFile('traffic.csv', csvHeaders+fileData.map(d => d.join(";")).join('\n'), (err) => {
+                  if (err) throw err;
+                  console.log('File saved');
+                });
+                */
 
                 let total = 0;
 
