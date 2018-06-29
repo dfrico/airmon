@@ -3,10 +3,6 @@ const http = require("http");
 
 function processData(rows, station) {
 
-    //let headers = rows[0].split(";");
-    //let hour = new Date().getHours();
-
-    // const station = '49'
     let filtered = rows.filter(r => r.split(";")[2] == station);
 
     const magnitudes = {
@@ -31,7 +27,7 @@ function processData(rows, station) {
 
     let day = [];
     while(day.length<24){
-        day.push([]);
+        day.push({});
     }
 
     filtered.map((row) => {
@@ -41,39 +37,17 @@ function processData(rows, station) {
             .slice(8)
             .filter(v => !isNaN(v))
             .map((value, j) =>{
+                // traduccion id-particula (string)
                 let particula = magnitudes[attr[3]];
-                day[j].push({ [particula]: value });
-                // console.log("fila:", i, "hora:", j+1, magnitudes[attr[3]], value)
+                day[j][particula] = value;
             });
     });
 
-    /*
-  * printing
-  */
-
     console.log(`Data for ${zones[station]}`);
-
-    day.map((d, i) => {
-    // convert to str
-        let str = d
-            .slice(0,6) //remove this to avoid filtering some variables (too much noise)
-            .reduce((a,b) => {
-                let values = Object.entries(b);
-                return `${a}${values[0][0]}: ${values[0][1]} umg. `;
-            }, `${i}h\t `);
-        console.log(str, "etc");
-    });
-
-    /*
-  console.log('last data:')
-  filtered.map((row) => {
-    let attr = row.split(';')
-    console.log(magnitudes[attr[3]] + ': ' + attr[index] + ' ug/m3')
-  })
-  */
+    console.table(day);
 }
 
-function particles(station = "8") {
+function particles() {
     let options = {
         hostname: "datos.madrid.es",
         //port: 443,
@@ -106,7 +80,11 @@ function particles(station = "8") {
                 res.on("end", function() {
                     // Processing csv data
                     let rows = csv.split("\n");
-                    processData(rows, station);
+
+                    // TODO: dont filter by zone, separate in processData
+                    for(let z of Object.keys(zones).splice(0,4)){
+                        processData(rows, z);
+                    }
                 });
 
             }).on("error", (e) => {
@@ -114,10 +92,6 @@ function particles(station = "8") {
             });
 
         } else {
-            /*let data = "";
-            res.on("data", function(chunk) {
-                data += chunk;
-            }).on("end", function() {});*/
             console.error("Err in the request");
         }
 
@@ -159,8 +133,5 @@ const zones = {
 };
 
 console.log(`${Object.keys(zones).length} zones`);
-// (25 tablas)
 
-for(let z of Object.keys(zones).splice(0,3)){
-    particles(z);
-}
+particles();
