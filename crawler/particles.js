@@ -134,4 +134,6 @@ const zones = {
 
 console.log(`${Object.keys(zones).length} zones`);
 
-particles();
+// particles();
+
+exports.p = particles;

@@ -97,7 +97,7 @@ function getNN(x, y) {
 
 let locations = [], refCoordinates = [], zones = {};
 
-fs.readFile("./traffic_locations.csv", "utf8", (err, data) => {
+fs.readFile("./csv/traffic_locations.csv", "utf8", (err, data) => {
     if (err) throw err;
     console.log("Loading locations");
     data
@@ -107,7 +107,7 @@ fs.readFile("./traffic_locations.csv", "utf8", (err, data) => {
             locations.push(d.split(";"));
         });
 
-    fs.readFile("./coordinates.csv", "utf8", (err, data) => {
+    fs.readFile("./csv/coordinates.csv", "utf8", (err, data) => {
         if (err) throw err;
         console.log("Loading coordinates for air monitoring stations");
         refCoordinates = data

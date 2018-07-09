@@ -123,4 +123,6 @@ function meteo() {
     }
 }
 
-meteo();
+// meteo();
+
+exports.m = meteo;
