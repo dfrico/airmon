@@ -26,9 +26,6 @@ var config = {
     resolve: {
         extensions: [".webpack.js", ".js", ".jsx"]
     },
-    /*plugins: [
-        new config.optimization.splitChunks(["vendor"], "vendor.bundle.js")
-    ],*/
     optimization: {
         minimize: false,
         splitChunks: {
@@ -40,9 +37,6 @@ var config = {
         }
     },
     module: {
-        /*loaders: [
-            { test: /\.jsx?$/, exclude: /node_modules/, loader: "babel-loader"}
-        ]*/
         rules: [{
             test: /\.(js|jsx)$/,
             include: path.resolve(__dirname, 'src'),
@@ -53,6 +47,11 @@ var config = {
                 }
             }
         }]
+    },
+    devServer: {
+        contentBase: './build',
+        watchContentBase: true,
+        port: 9000
     }
 };
 
