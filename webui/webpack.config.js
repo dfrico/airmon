@@ -49,9 +49,10 @@ var config = {
         }]
     },
     devServer: {
-        contentBase: './build',
-        watchContentBase: true,
-        port: 9000
+        contentBase: path.resolve(__dirname, './build'),
+        // hot: true,
+        port: 9000,
+        watchContentBase: true
     }
 };
 
