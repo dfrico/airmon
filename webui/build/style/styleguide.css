@@ -1,0 +1,128 @@
+/* Color palette */
+
+:root {
+	--charcoal-grey: #3a3a3c;
+	--warm-grey: #9b9b9b;
+	--silver: #d1d2d4;
+	--faded-blue: #638bb7;
+	--light-grey: #edece4;
+	--light-grey-two: #d9d8cf;
+	--pinkish-tan: #da8585;
+}
+
+/* Text styles */
+
+.text-h-1 {
+	font-family: AvenirNext-Bold;
+	font-size: 36px;
+	color: #4a4a4a;
+}
+
+.text-h-2 {
+	font-family: AvenirNext-Bold;
+	font-size: 30px;
+	color: #4a4a4a;
+}
+
+.text-h-3 {
+	font-family: AvenirNext-Bold;
+	font-size: 24px;
+	color: #4a4a4a;
+}
+
+.text-quote {
+	font-family: Palatino-Italic;
+	font-size: 24px;
+	line-height: 1.4;
+	text-align: center;
+	color: #4a4a4a;
+}
+
+.text-h-4 {
+	font-family: AvenirNext-Bold;
+	font-size: 20px;
+	color: #4a4a4a;
+}
+
+.text-introduction-text {
+	font-family: AvenirNext-Regular;
+	font-size: 18px;
+	line-height: 1.4;
+	color: #4a4a4a;
+}
+
+.navigation-button-right {
+	font-family: .AppleSystemUIFont;
+	font-size: 17px;
+	letter-spacing: -0.4px;
+	text-align: right;
+	color: #0076ff;
+}
+
+.form-legend {
+	font-family: AvenirNext-Medium;
+	font-size: 16px;
+	color: #4a4a4a;
+}
+
+.form-button-label {
+	font-family: AvenirNext-Bold;
+	font-size: 14px;
+	text-align: center;
+	color: #4a4a4a;
+}
+
+.form-button-label-disabled {
+	font-family: AvenirNext-Bold;
+	font-size: 14px;
+	letter-spacing: -0.4px;
+	text-align: center;
+	color: #bbbbbb;
+}
+
+.navigation-search-placeholder {
+	font-family: .AppleSystemUIFont;
+	font-size: 14px;
+	letter-spacing: -0.2px;
+	color: #7a797b;
+}
+
+.text-body {
+	font-family: AvenirNext-Regular;
+	font-size: 14px;
+	line-height: 1.4;
+	color: #4a4a4a;
+}
+
+.form-input-disabled {
+	font-family: AvenirNext-Regular;
+	font-size: 14px;
+	color: #bbbbbb;
+}
+
+.form-input {
+	font-family: AvenirNext-Regular;
+	font-size: 14px;
+	color: #4a4a4a;
+}
+
+.form-button-label-secondary {
+	font-family: AvenirNext-Regular;
+	font-size: 14px;
+	text-align: center;
+	color: #4a4a4a;
+}
+
+.form-button-label-secondary-disabled {
+	font-family: AvenirNext-Regular;
+	font-size: 14px;
+	text-align: center;
+	color: #bbbbbb;
+}
+
+.text-small-text {
+	font-family: AvenirNext-Regular;
+	font-size: 10px;
+	line-height: 1.5;
+	color: #4a4a4a;
+}

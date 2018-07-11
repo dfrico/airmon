@@ -1,0 +1,35 @@
+@font-face {
+    font-family: 'Futura-pt';
+    font-weight: bold;
+    src: url('../fonts/futura-pt-heavy.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Futura-pt';
+    font-weight: normal;
+    src: url('../fonts/futura-pt-normal.woff2') format('woff2');
+}
+
+body {
+	font-family: 'proxima-nova', 'omnes-pro';
+	font-size: 100%;
+	margin: 0;
+	background: #fcfcfc;
+	min-width: 372px;
+	max-width: 400px;
+	/*min-height: 180px;*/
+	overflow-y: hidden;
+	-webkit-font-smoothing: antialiased;
+}
+
+.header h1 {
+    font-family: 'Futura-pt';
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.header a {
+    font-family: 'Futura-pt';
+    font-weight: normal;
+    text-transform: uppercase;
+}
