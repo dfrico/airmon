@@ -32,7 +32,7 @@ function airmon(station, callback) {
         console.log(`\nGetting data from station ${station} - ${zones[station]}\n`);
     }
 
-    let imageURL = "http://www.mambiente.munimadrid.es/sica/datos/marker.' + station + '.png";
+    let imageURL = "http://www.mambiente.munimadrid.es/sica/datos/marker." + station + ".png";
 
     Jimp.read(imageURL, (err, sourceImage) => {
         if (err) {

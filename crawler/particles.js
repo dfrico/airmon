@@ -1,9 +1,14 @@
 const https = require("https");
 const http = require("http");
 
-function processData(rows, station) {
+function processData(rows) {
 
-    let filtered = rows.filter(r => r.split(";")[2] == station);
+    let values = Object.assign({}, zones);
+    Object.keys(zones).map(k => values[k] = []);
+    rows.map(r => !isNaN(r.split(";")[2]) ? values[r.split(";")[2]].push(r) : "");
+    // Object.keys(zones).map(k => console.log(zones[k], ":", values[k].length));
+    // zones: id-name
+    // values: id-rows
 
     const magnitudes = {
         "1": "SO2",
@@ -25,26 +30,33 @@ function processData(rows, station) {
         "44": "Hexano"
     };
 
-    let day = [];
-    while(day.length<24){
-        day.push({});
-    }
+    let day;
 
-    filtered.map((row) => {
+     Object.keys(values).map(k =>{
+        // for each zone
+        // 24h * N particles
+        day = Array.from({length: 24}, e => []); // avoid Array(24).fill([])
 
-        let attr = row.split(";");
-        attr
-            .slice(8)
-            .filter(v => !isNaN(v))
-            .map((value, j) =>{
-                // traduccion id-particula (string)
-                let particula = magnitudes[attr[3]];
-                day[j][particula] = value;
-            });
-    });
+        values[k].map((row) => {
+            // for each row (1 particle) in zone data:
 
-    console.log(`Data for ${zones[station]}`);
-    console.table(day);
+            let attr = row.split(";");
+            attr
+                .slice(8) // filtering pre-useful values
+                .filter(v => !isNaN(v)) // filtering V/N columns
+                .map((value, h) =>{ // 24 times
+                    // traduccion id-particula (string)
+                    let particula = magnitudes[attr[3]];
+
+                    day[h].push(value);
+                    console.log(`pushing particle ${particula} on hour ${h} with value ${value}. \
+                        Day has length ${day.length} and hour ${h} has ${day[h].length} entries`)
+                });
+        });
+        console.log(`Data for ${zones[k]}`);
+        console.table(day);
+        process.exit();
+     });
 }
 
 function particles() {
@@ -82,9 +94,7 @@ function particles() {
                     let rows = csv.split("\n");
 
                     // TODO: dont filter by zone, separate in processData
-                    for(let z of Object.keys(zones).splice(0,4)){
-                        processData(rows, z);
-                    }
+                    processData(rows);
                 });
 
             }).on("error", (e) => {
@@ -134,6 +144,6 @@ const zones = {
 
 console.log(`${Object.keys(zones).length} zones`);
 
-// particles();
+particles();
 
 exports.p = particles;
