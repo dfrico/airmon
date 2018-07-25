@@ -48,14 +48,15 @@ function processData(rows) {
                     // traduccion id-particula (string)
                     let particula = magnitudes[attr[3]];
 
-                    day[h].push(value);
-                    console.log(`pushing particle ${particula} on hour ${h} with value ${value}. \
-                        Day has length ${day.length} and hour ${h} has ${day[h].length} entries`)
+                    // day[h].push(value);
+                    day[h][particula] = value;
+                    // console.log(`pushing particle ${particula} on hour ${h} with value ${value}. \
+                    //     Day has length ${day.length} and hour ${h} has ${day[h].length} entries`)
                 });
         });
         console.log(`Data for ${zones[k]}`);
         console.table(day);
-        process.exit();
+        console.log()
      });
 }
 
