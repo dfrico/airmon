@@ -32,7 +32,7 @@ function processData(rows) {
 
     let day;
 
-     Object.keys(values).map(k =>{
+     Object.keys(values).map((k, i) =>{
         // for each zone
         // 24h * N particles
         day = Array.from({length: 24}, e => []); // avoid Array(24).fill([])
@@ -54,7 +54,7 @@ function processData(rows) {
                     //     Day has length ${day.length} and hour ${h} has ${day[h].length} entries`)
                 });
         });
-        console.log(`Data for ${zones[k]}`);
+        console.log(`${i+1}. Data for ${zones[k]}`);
         console.table(day);
         console.log()
      });

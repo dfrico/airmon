@@ -94,14 +94,18 @@ function parseKeys(keys, txts, obj) {
 }
 
 function processData(alldata, estaciones) {
+    let i = 0;
+
     for(obj of alldata){
         // foreach station
         let {id, data} = obj;
         // console.log(estaciones.filter(e => e.id==id)[0].nombre, ":\n", data, '\n')
-        for (let zona of locations) {
-            console.log(`${zona[1]} (${zona[7]}):`)
-            console.table(data)
-        }
+        locations
+            .filter(l => l[6]==id)
+            .map((zona) => {
+                console.log(`${++i}. ${zona[1]} (${zona[7]}):`)
+                console.table(data)
+            });
     }
 }
 
@@ -158,32 +162,34 @@ function meteo() {
     let responses = [];
     let completed_requests = 0;
 
-    for (let e of estaciones) {
-        let {id} = e;
 
-        getData(id, (data) => {
-            responses.push({id, data});
-            completed_requests++;
+    fs.readFile("./csv/coordinates.csv", "utf8", (err, data) => {
+        if (err) throw err;
+        console.log("Loading locations");
+        data
+            .split("\n")
+            .map(d => {
+                // d = d.slice(0, -1); //unnecessary removal of \r ?
+                locations.push(d.split(";"));
+            });
+        
+        for (let e of estaciones) {
+            let {id} = e;
 
-            if(completed_requests == estaciones.length){
-                processData(responses, estaciones);
-            }
-        });
-    }
+            getData(id, (data) => {
+                responses.push({id, data});
+                completed_requests++;
+
+                if(completed_requests == estaciones.length){
+                    processData(responses, estaciones);
+                }
+            });
+        }
+    });
 }
 
 let locations = [];
 
-fs.readFile("./csv/coordinates.csv", "utf8", (err, data) => {
-    if (err) throw err;
-    console.log("Loading locations");
-    data
-        .split("\n")
-        .map(d => {
-            // d = d.slice(0, -1); //unnecessary removal of \r ?
-            locations.push(d.split(";"));
-        });
-    meteo();
-});
+// meteo();
 
 exports.m = meteo;

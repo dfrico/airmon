@@ -4,11 +4,11 @@ const particles = partjs.p;
 const metjs = require("./meteo.js");
 const meteo = metjs.m;
 
+function buildData(table) {
+
+}
+
 particles();
-// TODO: change meteo output to console.table on verbose output
-meteo();
+meteo(buildData);
 
 // mongoDB section
-
-
-
