@@ -63,3 +63,4 @@ mad/
 .ipynb_checkpoints/
 .swp
 */build/js/
+db/
