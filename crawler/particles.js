@@ -1,4 +1,3 @@
-const https = require("https");
 const http = require("http");
 
 function processData(rows, callback) {
@@ -61,61 +60,41 @@ function processData(rows, callback) {
         // console.table(day[index])
         // console.log()
         response[k] = day[index];
-     });
-     // console.log(response)
-     callback(response)
+    });
+    // console.log(response)
+    if (callback) callback(response)
+    else console.log(response)
+
 }
 
 function particles(callback) {
     let options = {
-        hostname: "datos.madrid.es",
+        hostname: "www.mambiente.munimadrid.es",
         //port: 443,
-        path: "/egob/catalogo/212531-10515086-calidad-aire-tiempo-real.csv",
+        path: "/opendata/horario.csv",
         method: "GET",
         headers: {
-            "Accept": "application/json",
-            "Accept-Encoding": "gzip, deflate",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             "User-Agent": "Mozilla/5.0"
         }
     };
 
-    const req = https.request(options, (res) => {
+    const req = http.request(options, (res) => {
+        let csv = "";
         res.on("data", (d) => {
-            process.stdout.write(d);
+            csv += String(d);
         });
+        res.on("end", function() {
+            // Processing csv data
+            let rows = csv.split("\n");
 
-        if (res.statusCode > 300 && res.statusCode < 400 && res.headers.location) {
-            // The location for some (most) redirects will only contain the path
-            // not the hostname, detect this and add the host to the path.
-            let url = res.headers.location;
-            options.path = url.split(".es")[1].replace(" ", "");
-            options.hostname = url.split("/")[2];
-
-            http.get(options, (res) => {
-                let csv = "";
-                res.on("data", (d) => {
-                    csv += String(d);
-                });
-                res.on("end", function() {
-                    // Processing csv data
-                    let rows = csv.split("\n");
-
-                    // TODO: dont filter by zone, separate in processData
-                    processData(rows, callback);
-                });
-
-            }).on("error", (e) => {
-                console.error(e);
-            });
-
-        } else {
-            console.error("Err in the request");
-        }
-
+            // TODO: dont filter by zone, separate in processData
+            processData(rows, callback);
+        });
     });
 
     req.on("error", (e) => {
-        console.error(e);
+        console.error(`Req error. ${e}`);
     });
     req.end();
 }
@@ -151,6 +130,6 @@ const zones = {
 
 console.log(`${Object.keys(zones).length} zones`);
 
-particles();
+// particles();
 
 exports.p = particles;
