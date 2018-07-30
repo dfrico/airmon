@@ -1,7 +1,7 @@
 const https = require("https");
 const http = require("http");
 
-function processData(rows) {
+function processData(rows, callback) {
 
     let values = Object.assign({}, zones);
     Object.keys(zones).map(k => values[k] = []);
@@ -31,6 +31,7 @@ function processData(rows) {
     };
 
     let day;
+    let response = {};
 
      Object.keys(values).map((k, i) =>{
         // for each zone
@@ -54,13 +55,18 @@ function processData(rows) {
                     //     Day has length ${day.length} and hour ${h} has ${day[h].length} entries`)
                 });
         });
-        console.log(`${i+1}. Data for ${zones[k]}`);
-        console.table(day);
-        console.log()
+
+        index = new Date().getHours()-2;
+        // console.log(`${i+1}. Data for ${zones[k]}`);
+        // console.table(day[index])
+        // console.log()
+        response[k] = day[index];
      });
+     // console.log(response)
+     callback(response)
 }
 
-function particles() {
+function particles(callback) {
     let options = {
         hostname: "datos.madrid.es",
         //port: 443,
@@ -95,7 +101,7 @@ function particles() {
                     let rows = csv.split("\n");
 
                     // TODO: dont filter by zone, separate in processData
-                    processData(rows);
+                    processData(rows, callback);
                 });
 
             }).on("error", (e) => {

@@ -190,6 +190,6 @@ function meteo() {
 
 let locations = [];
 
-// meteo();
+meteo();
 
 exports.m = meteo;
