@@ -4,15 +4,21 @@ const particles = partjs.p;
 const metjs = require("./meteo.js");
 const meteo = metjs.m;
 
+const trafjs = require("./traffic.js")
+const traffic = trafjs.t;
+
 function buildData(table) {
     Object.keys(table).map(k => {
-        db[k].push(table[k])
+        // console.log("k:", k)
+        db[k] = {...db[k], ...table[k]};
     });
-
 }
 
 function processData() {
-    Object.keys(db).map(k => console.log(db[k]));
+    /*Object.keys(db).map(k => {
+        console.log(`zone: ${k}`)
+    });*/
+    console.table(db)
 }
 
 let db = { // 24 tables, each with 1 (new) row 
@@ -42,8 +48,10 @@ let db = { // 24 tables, each with 1 (new) row
     "60": []
 };
 
+console.log("Loading particles data")
 particles(data_p => {
 	buildData(data_p);
+    console.log("Loading meteo data")
 	meteo(data_m =>{
 		buildData(data_m)
 		processData()

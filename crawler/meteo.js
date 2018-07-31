@@ -93,20 +93,39 @@ function parseKeys(keys, txts, obj) {
     return {verbose, values}
 }
 
-function processData(alldata, estaciones) {
+function processData(alldata, estaciones, callback) {
     let i = 0;
+    let response = {}
+
+    const keys = [
+        //"ubi",
+        "temp (°C)",
+        "presión (hPa)",
+        "humedad (%)",
+        "viento (m/s)",
+        "precipitación (l/m2)"
+    ]
 
     for(obj of alldata){
         // foreach station
         let {id, data} = obj;
-        // console.log(estaciones.filter(e => e.id==id)[0].nombre, ":\n", data, '\n')
-        locations
-            .filter(l => l[6]==id)
-            .map((zona) => {
-                console.log(`${++i}. ${zona[1]} (${zona[7]}):`)
-                console.table(data)
+        if(data.length==0) continue;
+        data = data
+            .map(d => d.splice(1))
+            .map(d => {
+                i = 0;
+                return d.reduce((obj, attr) => {
+                    obj[keys[i]] = attr
+                    i++;
+                    return obj
+                }, {})
             });
+
+        // console.log(estaciones.filter(e => e.id==id)[0].nombre, ":\n", data, '\n')
+        estaciones = locations.filter(l => l[6]==id)
+        estaciones.map(e => response[e[0]] = data[data.length-1]);
     }
+    callback(response)
 }
 
 function NN(estaciones) {
@@ -134,7 +153,7 @@ function getNN(x, y, estaciones) {
     return data[0];
 }
 
-function meteo() {
+function meteo(callback) {
     const estaciones = [
         {
             "nombre": "MADRID AEROPUERTO",
@@ -181,7 +200,7 @@ function meteo() {
                 completed_requests++;
 
                 if(completed_requests == estaciones.length){
-                    processData(responses, estaciones);
+                    processData(responses, estaciones, callback);
                 }
             });
         }

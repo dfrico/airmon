@@ -49,7 +49,7 @@ function processData(rows, callback) {
                     let particula = magnitudes[attr[3]];
 
                     // day[h].push(value);
-                    day[h][particula] = value;
+                    day[h][particula] = Number(value);
                     // console.log(`pushing particle ${particula} on hour ${h} with value ${value}. \
                     //     Day has length ${day.length} and hour ${h} has ${day[h].length} entries`)
                 });
@@ -128,7 +128,7 @@ const zones = {
     "60": "Tres Olivos"
 };
 
-console.log(`${Object.keys(zones).length} zones`);
+// console.log(`${Object.keys(zones).length} zones`);
 
 // particles();
 
