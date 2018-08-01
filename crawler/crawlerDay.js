@@ -52,8 +52,12 @@ console.log("Loading particles data")
 particles(data_p => {
 	buildData(data_p);
     console.log("Loading meteo data")
-	meteo(data_m =>{
-		buildData(data_m)
-		processData()
+	meteo(data_m => {
+		buildData(data_m);
+		console.log("Loading traffic data")
+        traffic(data_t => {
+            buildData(data_t);
+            processData();
+        })
 	});
 });

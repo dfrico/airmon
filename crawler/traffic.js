@@ -2,85 +2,88 @@ const http = require("http");
 const fs = require("fs");
 const parseString = require("xml2js").parseString;
 
-function traffic() {
+function traffic(callback) {
     let options = {
         hostname: "informo.munimadrid.es",
         path: "/informo/tmadrid/pm.xml",
         method: "GET"
     };
 
-    const req = http.get(options, (res) => {
-        let xml = "";
+    let refCoordinates = [], zones = {};
 
-        process.stdout.write("Downloading data");
-        res.on("data", (d) => {
-            process.stdout.write(".");
-            xml += d;
-        }).on("end", () => {
-            process.stdout.write("\n");
+    fs.readFile("./csv/coordinates.csv", "utf8", (err, data) => {
+        // cross-reference airmon stations with traffic stations (coords)
+        if (err) throw err;
+        // console.log("Loading coordinates for air monitoring stations");
+        refCoordinates = data
+            .split("\n")
+            .map(d => {
+                d = d.slice(0, -1); // sometimes unnecessary removal of \r ?
+                zones[d.split(";")[0]] = [];
+                return d.split(";");
+            });
+        console.log("Loading traffic");
 
-            parseString(xml, function (err, result) {
-                if(err) throw err;
-                let data = result["pms"]["pm"];
-                let size = Object.keys(data).length;
-                let fileData = [];
-                console.log(`${size} entries.`);
+        const req = http.get(options, (res) => {
+            let xml = "";
 
-                for (var i = 0; i < size; i++) {
+            process.stdout.write("Downloading data");
+            res.on("data", (d) => {
+                process.stdout.write(".");
+                xml += d;
+            }).on("end", () => {
+                process.stdout.write("\n");
 
-                    /*
-                    attr: codigo, descripcion, accesoAsociado, intensidad, ocupacion,
-                    carga, nivelServicio, intensidadSat, error, subarea
-                    */
-                    try{
-                        let station = locations.filter(l => l[0].slice(1,l[0].length-1)==data[i]["codigo"][0]);
-                        station = station[0] ? station[0] : [];
+                parseString(xml, function (err, result) {
+                    if(err) throw err;
+                    let data = result["pms"]["pm"];
+                    let size = Object.keys(data).length;
+                    console.log(`${size} entries.`);
 
-                        let zone = getNN(station[4].replace(",","."), station[5].replace(",","."));
-                        let ratio = ((Number(data[i]["intensidad"][0])/Number(data[i]["intensidadSat"][0]))*100).toFixed(2);
-                        let row = [zone, data[i]["intensidad"][0], data[i]["intensidadSat"][0], String(ratio).replace(".",","), station[4], station[5], data[i]["descripcion"][0]];
-                        fileData.push(row);
+                    for (var i = 0; i < size; i++) {
+
                         /*
-                        console.log(`Ocupación: ${data[i]["intensidad"][0]}/${data[i]["intensidadSat"][0]}.\
-                        \tCoord x:${station[4]}, y:${station[5]}.\tZona: ${zone}.\tNombre: "${data[i]["descripcion"][0]}".`)
+                        attr: idelem, descripcion, accesoAsociado, intensidad, ocupacion,
+                        carga,nivelServicio, intensidadSat, error, subarea, st_x, st_y
                         */
-                        zones[zone].push({[data[i]["codigo"][0]]: `${ratio}%` });
+                        try{
+                            station = data[i]
+                            let zone = getNN(station["st_x"][0].replace(",","."), station["st_y"][0].replace(",","."), refCoordinates);
+                            // console.log(`(${zone}) \t${station["idelem"][0]}: \t${station["intensidad"]}/${station["intensidadSat"]}`)
+                            let ratio = ((Number(station["intensidad"][0])/Number(station["intensidadSat"][0]))*100).toFixed(2);
+                            zones[zone].push({[data[i]["idelem"][0]]: `${ratio}%` });
 
+                        }
+                        catch(err){
+                            // console.log(err)
+                        }
                     }
-                    catch(err){
-                        // console.log(err)
-                    }
-                }
+                    let total = 0;
 
-                // Saving traffic data in file
-                /*
-                csvHeaders = "zone;int;intmax;%;x;y;name\n"
-                fs.writeFile('traffic.csv', csvHeaders+fileData.map(d => d.join(";")).join('\n'), (err) => {
-                  if (err) throw err;
-                  console.log('File saved');
+                    for(let z of Object.keys(zones)){
+                        total += zones[z].length;
+                        sum = zones[z].reduce((a,b) => {
+                            val = Object.values(b)[0];
+                            return a+Number(val.slice(0, val.length-1));
+                        }, 0)
+                        mean = (sum/zones[z].length).toFixed(2)
+                        // console.log(`${z}: ${zones[z].length} values. Mean value: ${}%`);
+                        zones[z] = {"Traffic density (%)": Number(mean)};
+                    }
+                    console.log(`${total} out of ${size}. ${size-total} entries filtered (due to errors in data)`);
+                    callback(zones)
                 });
-                */
-
-                let total = 0;
-
-                for(let z of Object.keys(zones)){
-                    total += zones[z].length;
-                    console.log(`${z}: ${zones[z].length}`);
-                }
-
-                console.log(`${total} out of ${size}. ${size-total} entries filtered (no coordinates available)`);
             });
         });
 
+        req.on("error", (e) => {
+            console.error(e);
+        });
+        req.end();
     });
-
-    req.on("error", (e) => {
-        console.error(e);
-    });
-    req.end();
 }
 
-function getNN(x, y) {
+function getNN(x, y, refCoordinates) {
     let data = refCoordinates
         .sort((a, b) => {
             let ay = a[4], ax = a[5], by = b[4], bx = b[5];
@@ -95,31 +98,6 @@ function getNN(x, y) {
     return data[0][0];
 }
 
-let locations = [], refCoordinates = [], zones = {};
+// traffic(d => console.table(d))
 
-fs.readFile("./csv/traffic_locations.csv", "utf8", (err, data) => {
-    if (err) throw err;
-    console.log("Loading locations");
-    data
-        .split("\n")
-        .map(d => {
-            d = d.slice(0, -1); //unnecessary removal of \r ?
-            locations.push(d.split(";"));
-        });
-
-    fs.readFile("./csv/coordinates.csv", "utf8", (err, data) => {
-        if (err) throw err;
-        console.log("Loading coordinates for air monitoring stations");
-        refCoordinates = data
-            .split("\n")
-            .map(d => {
-                d = d.slice(0, -1); //unnecessary removal of \r ?
-                zones[d.split(";")[0]] = [];
-                return d.split(";");
-            });
-        console.log("Loading traffic");
-        traffic();
-    });
-});
-
-exports.traffic = traffic;
+exports.t = traffic;

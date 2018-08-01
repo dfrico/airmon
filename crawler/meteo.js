@@ -184,7 +184,7 @@ function meteo(callback) {
 
     fs.readFile("./csv/coordinates.csv", "utf8", (err, data) => {
         if (err) throw err;
-        console.log("Loading locations");
+        // console.log("Loading locations");
         data
             .split("\n")
             .map(d => {
