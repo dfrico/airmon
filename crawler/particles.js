@@ -59,8 +59,9 @@ function processData(rows, callback) {
         // console.log(`${i+1}. Data for ${zones[k]}`);
         // console.table(day[index])
         // console.log()
-        response[k] = day[index];
+        response[k] = {...day[index], "hour_p": index};
     });
+    console.log(`Particles data from ${index}h`)
     // console.log(response)
     if (callback) callback(response)
     else console.log(response)
