@@ -32,7 +32,7 @@ class Header extends React.Component {
                             <text
                             id="airmad">
                                 <tspan
-                                x="30"
+                                x="0"
                                 y="100"
                                 >
                                 airmad
