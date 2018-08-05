@@ -10,28 +10,36 @@ const polygon = helpers.polygon;
 
 class Web extends React.Component {
     
-    constructor(props){
+    constructor(props) {
         super(props);
         this.state = {
-            names: []
+            names: [],
+            theme: "light"
         };
     }
 
-    setStore(store){
+    setStore(store) {
         this.setState(store);
     }
 
-    componentDidMount(){
-        let map = L.map('map').setView([40.42, -3.7], 11.5);
-        let token = "pk.eyJ1IjoiZGZyIiwiYSI6ImNqa2ZhN2dscjA2dm8zdm8zMTRpYzFtb3MifQ.OonL77wXkCGpixjghGTolA";
+    changeTheme() {
+        let theme = this.state.theme === "light" ? "dark" : "light";
 
-        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
-            maxZoom: 18,
-            id: 'mapbox.light',
-            accessToken: token
-        }).addTo(map);
+        switch(theme) {
+            case "dark":
+                document.body.style.backgroundColor = "#222";
+                break;
+            case "light":
+                document.body.style.backgroundColor = "#FFF";
+                break;
+            default:
+        }
 
+        this.setState({theme: theme});
+        console.log(L, L.layerGroup(), L.tileLayer());
+    }
+
+    voronoi(map) {
         // let url = "js/coordinates.csv";
         L.svg().addTo(map);
 
@@ -77,6 +85,21 @@ class Web extends React.Component {
                                 map.latLngToLayerPoint(d.LatLng).y +")";
                         }
                     );
+                }
+
+                let voronoi = d3.voronoi()
+                let polygon = svg.append("g")
+                    .attr("class", "polygons")
+                    .style("stroke", "tan")
+                    .style("stroke-width", 0.2)
+                    .selectAll("path")
+                    .data(voronoi.polygons(collection))
+                    .enter().append("path")
+                    .call(redrawPolygon)
+                    .style("fill", "beige");
+
+                function redrawPolygon(polygon) {
+                    polygon.attr("d",function(d) { return d ? "M" + d.join("L") + "Z" : null; })
                 }
 
                 /*
@@ -129,6 +152,21 @@ class Web extends React.Component {
         });
     }
 
+    componentDidMount() {
+        let map = L.map('map').setView([40.42, -3.7], 11.5);
+        let token = "pk.eyJ1IjoiZGZyIiwiYSI6ImNqa2ZhN2dscjA2dm8zdm8zMTRpYzFtb3MifQ.OonL77wXkCGpixjghGTolA";
+
+        let basemap = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+            maxZoom: 18,
+            id: 'mapbox.'+this.state.theme,
+            accessToken: token
+        });
+
+        basemap.addTo(map);
+        this.voronoi(map);
+    }
+
     render() {
         return (
             <div>
@@ -136,6 +174,10 @@ class Web extends React.Component {
                 <div className="card">
                     <div id="map"></div>
                 </div>
+                <label className="switch">
+                    <input type="checkbox" onChange={this.changeTheme.bind(this)}/>
+                    <span className="slider round"></span>
+                </label>
             </div>
         );
     }
