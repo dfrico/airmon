@@ -56,6 +56,40 @@ class Web extends React.Component {
                 map.on("viewreset", update);
                 update();
 
+                let voronoi = d3.voronoi()
+                    .x((d) => { return d.x; })
+                    .y((d) => { return d.y; });
+
+                /*voronoi(collection).polygons().map((d) => {
+                    console.log(d);
+                    d.cell = d;
+                });*/
+
+                let diagram = voronoi(collection),
+                    links = diagram.links(),          // Delaunay graph
+                    triangles = diagram.triangles(),  // Delaunay triangles
+                    polygons = diagram.polygons();    // Voronoi cells
+
+                console.log("diagram:", diagram)
+                console.log("links:", links)
+                console.log("triangles:", triangles)
+                console.log("polygons:", polygons)
+
+                /*
+                const buildPathFromPoint = (point) => {
+                    console.log(point)
+                    return "M" + point.cell.join("L") + "Z";
+                }
+
+                const selectPoint = (p) => {console.log(p);}
+
+                feature.append("path")
+                    .attr("class", "point-cell")
+                    .attr("d", buildPathFromPoint)
+                    .on('click', selectPoint)
+                    .classed("selected", function(d) { return lastSelectedPoint == d} );
+                */
+                
                 function update() {
                     feature.attr("transform",
                     (d) => {
