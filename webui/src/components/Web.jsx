@@ -1,5 +1,12 @@
+/* eslint-disable no-undef,no-inner-declarations */
 import React from 'react';
 import Header from './Header.jsx';
+
+import voronoi from '@turf/voronoi';
+const random = require('@turf/random');
+const randomPoint = random.randomPoint;
+const helpers = require('@turf/helpers');
+const polygon = helpers.polygon;
 
 class Web extends React.Component {
     
@@ -29,20 +36,25 @@ class Web extends React.Component {
         L.svg().addTo(map);
 
         // We simply pick up the SVG from the map object
-        let svg = d3.select("#map").select("svg"),
-        g = svg.append("g");
+        let svg = d3.select("#map").select("svg"), g = svg.append("g");
 
         d3.csv("js/coordinates.csv").then((collection) => {
             try{
-                console.log(collection[2]);
-
-                Object.keys(collection).map(k => {
+                let coords = Object.keys(collection).map(k => {
                     let obj = collection[k];
                     if(!obj.length){ // not headers array, only row obj {}
-                        obj.LatLng = new L.LatLng(obj.latitude, obj.longitude);
+                        return [obj.latitude, obj.longitude];
                     }
                 });
 
+                // D3 points (coordinates)
+
+                collection = Object.keys(collection).map(k => {
+                    let obj = collection[k];
+                    if(!obj.length){ // not headers array, only row obj {}
+                        return {...obj, "LatLng": new L.LatLng(obj.latitude, obj.longitude)};
+                    }
+                });
                 console.log(collection[2])
 
                 let feature = g.selectAll("circle")
@@ -56,6 +68,27 @@ class Web extends React.Component {
                 map.on("viewreset", update);
                 update();
 
+                function update() {
+                    feature.attr("transform",
+                        (d) => {
+                            console.log(map.latLngToLayerPoint(d.LatLng).x, map.latLngToLayerPoint(d.LatLng).y)
+                            return "translate("+
+                                map.latLngToLayerPoint(d.LatLng).x +","+
+                                map.latLngToLayerPoint(d.LatLng).y +")";
+                        }
+                    );
+                }
+
+                /*
+                let points = polygon(coords);
+                console.log(points);
+                let voronoiPolygons = voronoi(points);
+                // console.log(points, voronoiPolygons);
+
+                L.geoJson(voronoiPolygons.features).addTo(map);
+
+                // D3 voronoi
+                /*
                 let voronoi = d3.voronoi()
                     .x((d) => { return d.x; })
                     .y((d) => { return d.y; });
@@ -63,7 +96,8 @@ class Web extends React.Component {
                 /*voronoi(collection).polygons().map((d) => {
                     console.log(d);
                     d.cell = d;
-                });*/
+                });
+                * /
 
                 let diagram = voronoi(collection),
                     links = diagram.links(),          // Delaunay graph
@@ -89,17 +123,6 @@ class Web extends React.Component {
                     .on('click', selectPoint)
                     .classed("selected", function(d) { return lastSelectedPoint == d} );
                 */
-                
-                function update() {
-                    feature.attr("transform",
-                    (d) => {
-                        return "translate("+
-                            map.latLngToLayerPoint(d.LatLng).x +","+
-                            map.latLngToLayerPoint(d.LatLng).y +")";
-                        }
-                    )
-                }
-
             } catch(e) {
                 console.error(e);
             }
@@ -114,7 +137,7 @@ class Web extends React.Component {
                     <div id="map"></div>
                 </div>
             </div>
-    );
+        );
     }
     
 }

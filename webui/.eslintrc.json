@@ -22,7 +22,7 @@
     "rules": {
         "indent": [
             "error",
-            "tab"
+            4
         ],
         "no-unused-vars": 1,
         "react/jsx-uses-vars": 1,
