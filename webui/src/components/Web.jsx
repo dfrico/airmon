@@ -2,11 +2,7 @@
 import React from 'react';
 import Header from './Header.jsx';
 
-import voronoi from '@turf/voronoi';
-const random = require('@turf/random');
-const randomPoint = random.randomPoint;
-const helpers = require('@turf/helpers');
-const polygon = helpers.polygon;
+import * as turf from '@turf/turf'
 
 class Web extends React.Component {
     
@@ -48,104 +44,28 @@ class Web extends React.Component {
 
         d3.csv("js/coordinates.csv").then((collection) => {
             try{
-                let coords = Object.keys(collection).map(k => {
+                let features = [];
+                Object.keys(collection).map(k => {
                     let obj = collection[k];
                     if(!obj.length){ // not headers array, only row obj {}
-                        return [obj.latitude, obj.longitude];
+                        let feature = turf.point([obj.longitude, obj.latitude], {id: obj.id, name: obj.name})
+                        feature.style = {color: "red"}
+                        features.push(feature)
                     }
                 });
 
                 // D3 points (coordinates)
 
-                collection = Object.keys(collection).map(k => {
-                    let obj = collection[k];
-                    if(!obj.length){ // not headers array, only row obj {}
-                        return {...obj, "LatLng": new L.LatLng(obj.latitude, obj.longitude)};
+                let fc = turf.featureCollection(features)
+                let pointLayer = L.geoJSON(fc, {
+                    pointToLayer: function (feature, latlng) {
+                        return L.circleMarker(latlng, {radius: 1.2, color: '#23A480'});  
                     }
-                });
-                console.log(collection[2])
+                }).addTo(map);
 
-                let feature = g.selectAll("circle")
-                    .data(collection)
-                    .enter().append("circle")
-                    // .style("stroke", "black")
-                    .style("opacity", .6)
-                    .style("fill", "red")
-                    .attr("r", 3);
+                let voronoiPolygons = turf.voronoi(fc);
+                let voronoiLayer = L.geoJSON(voronoiPolygons).addTo(map);
 
-                map.on("viewreset", update);
-                update();
-
-                function update() {
-                    feature.attr("transform",
-                        (d) => {
-                            console.log(map.latLngToLayerPoint(d.LatLng).x, map.latLngToLayerPoint(d.LatLng).y)
-                            return "translate("+
-                                map.latLngToLayerPoint(d.LatLng).x +","+
-                                map.latLngToLayerPoint(d.LatLng).y +")";
-                        }
-                    );
-                }
-
-                let voronoi = d3.voronoi()
-                let polygon = svg.append("g")
-                    .attr("class", "polygons")
-                    .style("stroke", "tan")
-                    .style("stroke-width", 0.2)
-                    .selectAll("path")
-                    .data(voronoi.polygons(collection))
-                    .enter().append("path")
-                    .call(redrawPolygon)
-                    .style("fill", "beige");
-
-                function redrawPolygon(polygon) {
-                    polygon.attr("d",function(d) { return d ? "M" + d.join("L") + "Z" : null; })
-                }
-
-                /*
-                let points = polygon(coords);
-                console.log(points);
-                let voronoiPolygons = voronoi(points);
-                // console.log(points, voronoiPolygons);
-
-                L.geoJson(voronoiPolygons.features).addTo(map);
-
-                // D3 voronoi
-                /*
-                let voronoi = d3.voronoi()
-                    .x((d) => { return d.x; })
-                    .y((d) => { return d.y; });
-
-                /*voronoi(collection).polygons().map((d) => {
-                    console.log(d);
-                    d.cell = d;
-                });
-                * /
-
-                let diagram = voronoi(collection),
-                    links = diagram.links(),          // Delaunay graph
-                    triangles = diagram.triangles(),  // Delaunay triangles
-                    polygons = diagram.polygons();    // Voronoi cells
-
-                console.log("diagram:", diagram)
-                console.log("links:", links)
-                console.log("triangles:", triangles)
-                console.log("polygons:", polygons)
-
-                /*
-                const buildPathFromPoint = (point) => {
-                    console.log(point)
-                    return "M" + point.cell.join("L") + "Z";
-                }
-
-                const selectPoint = (p) => {console.log(p);}
-
-                feature.append("path")
-                    .attr("class", "point-cell")
-                    .attr("d", buildPathFromPoint)
-                    .on('click', selectPoint)
-                    .classed("selected", function(d) { return lastSelectedPoint == d} );
-                */
             } catch(e) {
                 console.error(e);
             }
