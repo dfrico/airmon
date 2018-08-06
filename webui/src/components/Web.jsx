@@ -19,6 +19,7 @@ class Web extends React.Component {
     }
 
     changeTheme() {
+        // TODO: improve palette, remove themes ?
         let theme = this.state.theme === "light" ? "dark" : "light";
 
         switch(theme) {
@@ -32,7 +33,15 @@ class Web extends React.Component {
         }
 
         this.setState({theme: theme});
-        console.log(L, L.layerGroup(), L.tileLayer());
+
+        console.log(this.baselayer)
+        this.baselayer.remove();
+        this.baselayer = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+            maxZoom: 18,
+            id: 'mapbox.'+theme,
+            accessToken: this.token
+        }).addTo(this.map);
     }
 
     voronoi(map) {
@@ -63,8 +72,18 @@ class Web extends React.Component {
                     }
                 }).addTo(map);
 
-                let voronoiPolygons = turf.voronoi(fc);
-                let voronoiLayer = L.geoJSON(voronoiPolygons).addTo(map);
+                let myStyle = {
+                    "color": this.state.theme === "dark" ? "#222" : "#999",
+                    "fill": "red",
+                    "weight": 1.4,
+                    "opacity": 0.4
+                };
+                console.log(fc)
+
+                this.voronoiPolygons = turf.voronoi(fc);
+                this.voronoiLayer = L.geoJSON(this.voronoiPolygons, {
+                    style: myStyle
+                }).addTo(map);
 
             } catch(e) {
                 console.error(e);
@@ -73,18 +92,31 @@ class Web extends React.Component {
     }
 
     componentDidMount() {
-        let map = L.map('map').setView([40.42, -3.7], 11.5);
-        let token = "pk.eyJ1IjoiZGZyIiwiYSI6ImNqa2ZhN2dscjA2dm8zdm8zMTRpYzFtb3MifQ.OonL77wXkCGpixjghGTolA";
+        this.map = L.map('map').setView([40.42, -3.7], 11.5);
+        this.token = "pk.eyJ1IjoiZGZyIiwiYSI6ImNqa2ZhN2dscjA2dm8zdm8zMTRpYzFtb3MifQ.OonL77wXkCGpixjghGTolA";
 
-        let basemap = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}', {
+        this.baselayer = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
             maxZoom: 18,
             id: 'mapbox.'+this.state.theme,
-            accessToken: token
-        });
+            accessToken: this.token
+        }).addTo(this.map);
 
-        basemap.addTo(map);
-        this.voronoi(map);
+        this.voronoi(this.map);
+    }
+
+    componentDidUpdate() {
+        let myStyle = {
+                "color": this.state.theme === "dark" ? "#FFF" : "#222",
+                "fill": "red",
+                "weight": 1.4,
+                "opacity": 0.4
+        };
+        this.voronoiLayer.clearLayers();
+        console.log(this.voronoiPolygons);
+        this.voronoiLayer = L.geoJSON(this.voronoiPolygons, {
+            style: myStyle
+        }).addTo(this.map);
     }
 
     render() {
