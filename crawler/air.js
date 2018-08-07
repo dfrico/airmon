@@ -53,6 +53,14 @@ function airmon(station, callback) {
                 text = "Air quality could be better.";
                 if(process.argv.indexOf("-c") != -1)
                     text = `\x1b[33m\n${text}\x1b[0m`;
+            } else if (r>g && g>b) {
+                text = "Air quality is bad.";
+                if(process.argv.indexOf("-c") != -1)
+                    text = `\x1b[31m\n${text}\x1b[0m`;
+            } else if (g == b){
+                text = "Air quality is really bad";
+                if(process.argv.indexOf("-c") != -1)
+                    text = `\x1b[35m\n${text}\x1b[0m`;
             } else {
                 console.log(r, g, b);
                 text = "Air quality is probably bad.";
