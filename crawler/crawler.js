@@ -10,8 +10,12 @@ const traffic = trafjs.t;
 const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
 
-const domain = "ec2-54-77-153-131.eu-west-1.compute.amazonaws.com"
-const url = `mongodb://${domain}:27017/?retryWrites=true`;
+const domain = process.env.aws;
+if(!domain) {
+    console.error("No url for mongoDB instance");
+    process.exit();
+}
+const url = `mongodb://${domain}:27017/`;
 
 function buildData(table) {
     Object.keys(table).map(k => {
@@ -20,41 +24,42 @@ function buildData(table) {
 }
 
 function processData() {
-    console.table(rows);
+    // console.table(rows);
 
-    MongoClient.connect(url, function(err, client) {
+    MongoClient.connect(url, { useNewUrlParser: true }, function(err, client) {
         assert.equal(null, err);
         const db = client.db("airmon");
 
-        Object.keys(rows).map((k, i) => {
+        Object.keys(rows)
+        .slice(0,4) // trying only with 4 zones to begin with
+        .map(k => {
             row = rows[k];
-            // console.log(`zone: ${k}`);
 
-            // k = "test";
-            console.log(k, i)
-            try {
+            /*try {
                 // ideally:
-                // assert.equal(row["hour_p"], row["hour_m"])
+                assert.equal(row["hour_p"], row["hour_m"])
+            }catch(e) {
+                console.log(e);
+            }*/
+            // TODO: update row with correct values (2h before) except traffic
+            // let test = db.collection(k).find( { "hour_m": row["hour_m"] } );
+
+            try {
+                let doc = db
+                .collection(k)
+                .insertOne(row, {w: 1}, (err, r) => {
+                    try {
+                        assert.equal(null, err);
+                        assert.equal(1, r.insertedCount);
+                    }catch(e) {
+                        console.error(`error in callback: ${e}`)
+                    }
+                });
+                // console.log(doc)
             }catch(e) {
                 console.log(e);
             }
-
-            if(i>4) {
-                console.warn("\nboop, enough")
-                client.close();
-                process.exit();
-            }
-            // TODO: update row with correct values (2h before) except traffic
-            /* db.collection(k).find( { "hour_m": 21 } ); */
-
-            db.collection(k)
-            .insertOne(row)
-            .then(function(result) {
-                console.log("all good");
-                console.log(result);
-            })
         });
-
         client.close();
     });
 }
@@ -85,6 +90,12 @@ let rows = { // 24 tables, each with 1 (new) row
     "59": [],
     "60": []
 };
+
+// trying to connect to DB before doing anything
+MongoClient.connect(url, { useNewUrlParser: true }, function(err, client) {
+    assert.equal(null, err);
+    client.close();
+});
 
 console.log("Loading particles data")
 particles(data_p => {
