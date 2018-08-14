@@ -32,7 +32,7 @@ function processData(rows, callback) {
     let day;
     let response = {};
 
-     Object.keys(values).map((k, i) =>{
+    Object.keys(values).map((k, i) =>{
         // for each zone
         // 24h * N particles
         day = Array.from({length: 24}, e => []); // avoid Array(24).fill([])
@@ -131,6 +131,6 @@ const zones = {
 
 // console.log(`${Object.keys(zones).length} zones`);
 
-// particles();
+// particles(data => console.table(data));
 
 exports.p = particles;

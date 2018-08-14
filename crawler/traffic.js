@@ -68,7 +68,11 @@ function traffic(callback) {
                         }, 0)
                         mean = (sum/zones[z].length).toFixed(2)
                         // console.log(`${z}: ${zones[z].length} values. Mean value: ${}%`);
-                        zones[z] = {"Traffic density (%)": Number(mean)};
+                        zones[z] = {
+                            "Traffic density (%)": Number(mean),
+                            "hour_t": new Date().getHours(),
+                            "date": new Date()
+                        };
                     }
                     console.log(`${total} out of ${size}. ${size-total} entries filtered (due to errors in data)`);
                     callback(zones)
@@ -96,6 +100,10 @@ function getNN(x, y, refCoordinates) {
             return 0;
         });
     return data[0][0];
+}
+
+function getDate() {
+    return `${new Intl.DateTimeFormat('en-GB').format()}-${String(date.getHours()).length == 1 ? '0'+date.getHours() : date.getHours()}:${String(date.getMinutes()).length == 1 ? '0'+date.getMinutes() : date.getMinutes()}`
 }
 
 // traffic(d => console.table(d))

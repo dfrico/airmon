@@ -17,9 +17,11 @@ if(!domain) {
 }
 const url = `mongodb://${domain}:27017/`;
 
-function buildData(table) {
+function buildData(table, type) {
     Object.keys(table).map(k => {
-            rows[k] = {...rows[k], ...table[k]};
+            let obj = {}
+            obj[type] = table[k];
+            rows[k] = {...rows[k], ...obj};
     });
 }
 
@@ -31,23 +33,47 @@ function processData() {
         const db = client.db("airmon");
 
         Object.keys(rows)
-        .slice(0,4) // trying only with 4 zones to begin with
+        // .slice(0,4) // trying only with 4 zones to begin with
         .map(k => {
-            row = rows[k];
+            let {particles, meteo, traffic} = rows[k];
+            // note: particles & meteo hours may be 1-2h delayed.
+            // hour_t is correct ("current" hour and search key)
 
-            /*try {
-                // ideally:
-                assert.equal(row["hour_p"], row["hour_m"])
-            }catch(e) {
-                console.log(e);
-            }*/
-            // TODO: update row with correct values (2h before) except traffic
-            // let test = db.collection(k).find( { "hour_m": row["hour_m"] } );
+            // Updating particles data
+            try{
+                db
+                .collection(k)
+                .update(
+                    // has: traffic data & hour_t
+                    {"hour_t": { $eq: particles.hour_p }},
+                    // how has: traffic, t_h, particles
+                    { $set: particles })
+                    // .then(r => console.log(`Particles for ${particles.hour_p}. Got: ${r.result}`))
+                    // .catch(e => console.log(e));
+            } catch(e) {
+                console.error(e);
+            }
 
+            // Updating meteo data
+            try{
+                db
+                .collection(k)
+                .update(
+                    // has: traffic data & hour_t
+                    {"hour_t": { $eq: meteo.hour_m }},
+                    // how has: traffic, t_h, meteo
+                    { $set: meteo })
+                    // .then(r => console.log(`Meteo for ${meteo.hour_m}. Got: ${r.result}`))
+                    // .catch(e => console.log(e));
+            } catch(e) {
+                console.error(e);
+            }
+
+            // Inserting new row (with traffic)
             try {
                 let doc = db
                 .collection(k)
-                .insertOne(row, {w: 1}, (err, r) => {
+                .insertOne(traffic, {w: 1}, (err, r) => {
                     try {
                         assert.equal(null, err);
                         assert.equal(1, r.insertedCount);
@@ -57,7 +83,7 @@ function processData() {
                 });
                 // console.log(doc)
             }catch(e) {
-                console.log(e);
+                console.error(e);
             }
         });
         client.close();
@@ -91,21 +117,15 @@ let rows = { // 24 tables, each with 1 (new) row
     "60": []
 };
 
-// trying to connect to DB before doing anything
-MongoClient.connect(url, { useNewUrlParser: true }, function(err, client) {
-    assert.equal(null, err);
-    client.close();
-});
-
 console.log("Loading particles data")
 particles(data_p => {
-    buildData(data_p);
+    buildData(data_p, 'particles');
     console.log("Loading meteo data")
     meteo(data_m => {
-        buildData(data_m);
+        buildData(data_m, 'meteo');
         console.log("Loading traffic data")
         traffic(data_t => {
-                buildData(data_t);
+                buildData(data_t, 'traffic');
                 processData();
         })
     });
