@@ -117,16 +117,22 @@ let rows = { // 24 tables, each with 1 (new) row
     "60": []
 };
 
-console.log("Loading particles data")
-particles(data_p => {
-    buildData(data_p, 'particles');
-    console.log("Loading meteo data")
-    meteo(data_m => {
-        buildData(data_m, 'meteo');
-        console.log("Loading traffic data")
-        traffic(data_t => {
-                buildData(data_t, 'traffic');
-                processData();
-        })
+let cron = require('node-cron');
+
+let task = cron.schedule('0 * * * *', function() {
+    console.log("Loading particles data")
+    particles(data_p => {
+        buildData(data_p, 'particles');
+        console.log("Loading meteo data")
+        meteo(data_m => {
+            buildData(data_m, 'meteo');
+            console.log("Loading traffic data")
+            traffic(data_t => {
+                    buildData(data_t, 'traffic');
+                    processData();
+            })
+        });
     });
-});
+}, false);
+
+task.start();
