@@ -30,12 +30,12 @@ function getData(id, callback) {
                         const body = JSON.parse(buffer);
 
                         //console.log(estaciones.filter(e => e.id==id)[0].nombre, metadata.descripcion)
-                        callback(parseData(body))
+                        callback(parseData(body));
                     });
                 });
             }
             else{
-                callback([])
+                callback([]);
                 //console.log(`Err getting data from ${estaciones.filter(e => e.id==id)[0].nombre} (${metadata["estado"]})`);
             }
         });
@@ -57,7 +57,7 @@ function parseData(data) {
         " humedad: VALUE (%),",
         " viento: VALUE (m/s),",
         " precipitación: VALUE (l/m2)"
-    ]
+    ];
     const keys = [
         //"ubi",
         "ta",
@@ -65,13 +65,13 @@ function parseData(data) {
         "hr",
         "vv",
         "prec"
-    ]
+    ];
 
-    let day = []
+    let day = [];
 
-    for(d of data) {
-        let {verbose, values} = parseKeys(keys, txts, d)
-        day.push([d.fint].concat(values))
+    for(let d of data) {
+        let {values} = parseKeys(keys, txts, d);
+        day.push([d.fint].concat(values));
 
         // TODO: pasar de array con valores a dict usable por console.log ¿?
         // console.log(d.fint, values)
@@ -85,17 +85,17 @@ function parseKeys(keys, txts, obj) {
     let verbose = "", values  = [];
 
     keys.map((key, i) => {
-        value = obj[key] ? obj[key] : 0;
-        verbose += txts[i].replace("VALUE", String(value))
-        values.push(value)
+        let value = obj[key] ? obj[key] : 0;
+        verbose += txts[i].replace("VALUE", String(value));
+        values.push(value);
 
     });
-    return {verbose, values}
+    return {verbose, values};
 }
 
 function processData(alldata, estaciones, callback) {
     let i = 0;
-    let response = {}
+    let response = {};
 
     const keys = [
         //"ubi",
@@ -104,11 +104,12 @@ function processData(alldata, estaciones, callback) {
         "humedad (%)",
         "viento (m/s)",
         "precipitación (l/m2)"
-    ]
+    ];
 
-    let hour = alldata[2].data[0][0].split("T")[1].split(":")[0];
-    console.log(`Meteo data from ${hour}h`)
-    for(obj of alldata){
+    let date = alldata[2].data[0][0];
+    let hour = date.split("T")[1].split(":")[0];
+    console.log(`Meteo data from ${hour}h`);
+    for(let obj of alldata){
         // foreach station
         let {id, data} = obj;
         if(data.length==0) continue;
@@ -117,29 +118,29 @@ function processData(alldata, estaciones, callback) {
             .map(d => {
                 i = 0;
                 return d.reduce((obj, attr) => {
-                    obj[keys[i]] = attr
+                    obj[keys[i]] = attr;
                     i++;
-                    return obj
-                }, {})
+                    return obj;
+                }, {});
             });
 
         // console.log(estaciones.filter(e => e.id==id)[0].nombre, ":\n", data, '\n')
-        estaciones = locations.filter(l => l[6]==id)
+        estaciones = locations.filter(l => l[6]==id);
         estaciones.map(e => response[e[0]] = {...data[data.length-1], "hour_m": Number(hour)});
     }
-    callback(response)
+    callback(response);
 }
 
 function NN(estaciones) {
     for (let zona of locations) {
         // zona: 35;Pza. del Carmen;40.41920833333333;-3.7031722222222223;4474524.28;440345.85;3195;MADRID, RETIRO
-        nearest = getNN(zona[2], zona[3], estaciones)
-        console.log(`${zona.join(";")};${nearest.id};${nearest.nombre}`)
+        let nearest = getNN(zona[2], zona[3], estaciones);
+        console.log(`${zona.join(";")};${nearest.id};${nearest.nombre}`);
     }
 }
 
 function getNN(x, y, estaciones) {
-    x = Number(x), y = Number(y)
+    x = Number(x), y = Number(y);
     let data = estaciones
         .sort((a, b) => {
             let ay = a.lon, ax = a.lat, by = b.lon, bx = b.lat;
@@ -211,6 +212,6 @@ function meteo(callback) {
 
 let locations = [];
 
-// meteo();
+meteo(m => console.table(m));
 
 exports.m = meteo;

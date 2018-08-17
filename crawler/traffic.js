@@ -47,7 +47,7 @@ function traffic(callback) {
                         carga,nivelServicio, intensidadSat, error, subarea, st_x, st_y
                         */
                         try{
-                            station = data[i]
+                            let station = data[i];
                             let zone = getNN(station["st_x"][0].replace(",","."), station["st_y"][0].replace(",","."), refCoordinates);
                             // console.log(`(${zone}) \t${station["idelem"][0]}: \t${station["intensidad"]}/${station["intensidadSat"]}`)
                             let ratio = ((Number(station["intensidad"][0])/Number(station["intensidadSat"][0]))*100).toFixed(2);
@@ -62,11 +62,11 @@ function traffic(callback) {
 
                     for(let z of Object.keys(zones)){
                         total += zones[z].length;
-                        sum = zones[z].reduce((a,b) => {
-                            val = Object.values(b)[0];
+                        let sum = zones[z].reduce((a,b) => {
+                            let val = Object.values(b)[0];
                             return a+Number(val.slice(0, val.length-1));
-                        }, 0)
-                        mean = (sum/zones[z].length).toFixed(2)
+                        }, 0);
+                        let mean = (sum/zones[z].length).toFixed(2);
                         // console.log(`${z}: ${zones[z].length} values. Mean value: ${}%`);
                         zones[z] = {
                             "Traffic density (%)": Number(mean),
@@ -75,7 +75,7 @@ function traffic(callback) {
                         };
                     }
                     console.log(`${total} out of ${size}. ${size-total} entries filtered (due to errors in data)`);
-                    callback(zones)
+                    callback(zones);
                 });
             });
         });
@@ -103,7 +103,10 @@ function getNN(x, y, refCoordinates) {
 }
 
 function getDate() {
-    return `${new Intl.DateTimeFormat('en-GB').format()}-${String(date.getHours()).length == 1 ? '0'+date.getHours() : date.getHours()}:${String(date.getMinutes()).length == 1 ? '0'+date.getMinutes() : date.getMinutes()}`
+    // meteo date format
+    // 2018-08-16T08:00:00
+    let d = new Date();
+    return `${d.getUTCFullYear()}-${String(d.getMonth()).length===1 ? "0"+(d.getMonth()+1) : d.getMonth()+1}-${d.getDate()}T${String(d.getHours()).length===1 ? "0"+d.getHours() : d.getHours()}:00:00`;
 }
 
 // traffic(d => console.table(d))

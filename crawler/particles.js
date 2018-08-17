@@ -29,13 +29,13 @@ function processData(rows, callback) {
         "44": "Hexano"
     };
 
-    let day;
+    let day, index;
     let response = {};
 
-    Object.keys(values).map((k, i) =>{
+    Object.keys(values).map(k =>{
         // for each zone
         // 24h * N particles
-        day = Array.from({length: 24}, e => []); // avoid Array(24).fill([])
+        day = Array.from({length: 24}, () => []); // avoid Array(24).fill([])
 
         values[k].map((row) => {
             // for each row (1 particle) in zone data:
@@ -61,10 +61,10 @@ function processData(rows, callback) {
         // console.log()
         response[k] = {...day[index], "hour_p": index};
     });
-    console.log(`Particles data from ${index}h`)
+    console.log(`Particles data from ${index}h`);
     // console.log(response)
-    if (callback) callback(response)
-    else console.log(response)
+    if (callback) callback(response);
+    else console.log(response);
 
 }
 
