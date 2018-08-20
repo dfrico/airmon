@@ -126,7 +126,7 @@ function processData(alldata, estaciones, callback) {
 
         // console.log(estaciones.filter(e => e.id==id)[0].nombre, ":\n", data, '\n')
         estaciones = locations.filter(l => l[6]==id);
-        estaciones.map(e => response[e[0]] = {...data[data.length-1], "hour_m": Number(hour)});
+        estaciones.map(e => response[e[0]] = {...data[data.length-1], "date_m": getDate(Number(hour))});
     }
     callback(response);
 }
@@ -154,6 +154,15 @@ function getNN(x, y, estaciones) {
             return 0;
         });
     return data[0];
+}
+function getDate(hour) {
+    // meteo date format
+    // 2018-08-16T08:00:00
+    let d = new Date();
+    if(hour>=22) { //probably it's data from the prev day
+        d = new Date(d.getFullYear(), d.getMonth(), d.getDate()-1);
+    }
+    return `${d.getFullYear()}-${String(d.getMonth()).length===1 ? "0"+(d.getMonth()+1) : d.getMonth()+1}-${d.getDate()}T${String(hour).length===1 ? "0"+hour : hour}:00:00`;
 }
 
 function meteo(callback) {
@@ -211,7 +220,7 @@ function meteo(callback) {
 }
 
 let locations = [];
-
-meteo(m => console.table(m));
+if(process.argv[1].indexOf("meteo.js") != -1 )
+    meteo(m => console.table(m));
 
 exports.m = meteo;

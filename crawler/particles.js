@@ -59,7 +59,7 @@ function processData(rows, callback) {
         // console.log(`${i+1}. Data for ${zones[k]}`);
         // console.table(day[index])
         // console.log()
-        response[k] = {...day[index], "hour_p": index};
+        response[k] = {...day[index], "date_p": getDate(index)};
     });
     console.log(`Particles data from ${index}h`);
     // console.log(response)
@@ -100,6 +100,13 @@ function particles(callback) {
     req.end();
 }
 
+function getDate(hour) {
+    // meteo date format
+    // 2018-08-16T08:00:00
+    let d = new Date();
+    return `${d.getUTCFullYear()}-${String(d.getMonth()).length===1 ? "0"+(d.getMonth()+1) : d.getMonth()+1}-${d.getDate()}T${String(hour).length===1 ? "0"+hour : hour}:00:00`;
+}
+
 exports.particles = particles;
 
 const zones = {
@@ -130,7 +137,7 @@ const zones = {
 };
 
 // console.log(`${Object.keys(zones).length} zones`);
-
-// particles(data => console.table(data));
+if(process.argv[1].indexOf("particles.js") != -1 )
+    particles(data => console.table(data));
 
 exports.p = particles;

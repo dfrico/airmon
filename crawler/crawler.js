@@ -34,8 +34,10 @@ function processData() {
 
         Object.keys(rows)
         // .slice(0,4) // trying only with 4 zones to begin with
+            .slice(0,1)
             .map(k => {
                 let {particles, meteo, traffic} = rows[k];
+                k = "test";
                 // note: particles & meteo hours may be 1-2h delayed.
                 // hour_t is correct ("current" hour and search key)
 
@@ -45,7 +47,7 @@ function processData() {
                         .collection(k)
                         .update(
                             // has: traffic data & hour_t
-                            {"hour_t": { $eq: particles.hour_p }},
+                            {"date_t": { $eq: particles.date_p }},
                             // how has: traffic, t_h, particles
                             { $set: particles });
                     // .then(r => console.log(`Particles for ${particles.hour_p}. Got: ${r.result}`))
@@ -60,7 +62,7 @@ function processData() {
                         .collection(k)
                         .update(
                             // has: traffic data & hour_t
-                            {"hour_t": { $eq: meteo.hour_m }},
+                            {"date_t": { $eq: meteo.date_m }},
                             // how has: traffic, t_h, meteo
                             { $set: meteo });
                     // .then(r => console.log(`Meteo for ${meteo.hour_m}. Got: ${r.result}`))

@@ -70,8 +70,7 @@ function traffic(callback) {
                         // console.log(`${z}: ${zones[z].length} values. Mean value: ${}%`);
                         zones[z] = {
                             "Traffic density (%)": Number(mean),
-                            "hour_t": new Date().getHours(),
-                            "date": new Date()
+                            "date_t": getDate()
                         };
                     }
                     console.log(`${total} out of ${size}. ${size-total} entries filtered (due to errors in data)`);
@@ -108,7 +107,7 @@ function getDate() {
     let d = new Date();
     return `${d.getUTCFullYear()}-${String(d.getMonth()).length===1 ? "0"+(d.getMonth()+1) : d.getMonth()+1}-${d.getDate()}T${String(d.getHours()).length===1 ? "0"+d.getHours() : d.getHours()}:00:00`;
 }
-
-// traffic(d => console.table(d))
+if(process.argv[1].indexOf("traffic.js") != -1 )
+    traffic(d => console.table(d));
 
 exports.t = traffic;
