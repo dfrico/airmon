@@ -3,10 +3,6 @@ import * as turf from '@turf/turf'
 
 class Map extends React.Component {
 
-    setStore(store) {
-        this.setState(store);
-    }
-
     voronoi(map) {
         // let url = "js/coordinates.csv";
         L.svg().addTo(map);
