@@ -1,5 +1,6 @@
+/*global d3 L*/
 import React from 'react';
-import * as turf from '@turf/turf'
+import {point, featureCollection, voronoi} from '@turf/turf';
 
 class Map extends React.Component {
 
@@ -8,24 +9,25 @@ class Map extends React.Component {
         L.svg().addTo(map);
 
         // We simply pick up the SVG from the map object
-        let svg = d3.select("#map").select("svg"), g = svg.append("g");
+        let svg = d3.select("#map").select("svg");
+        svg.append("g");
 
-        d3.csv("js/coordinates.csv").then((collection) => {
+        d3.csv("data/coordinates.csv").then((collection) => {
             try{
                 let features = [];
                 Object.keys(collection).map(k => {
                     let obj = collection[k];
                     if(!obj.length){ // not headers array, only row obj {}
-                        let feature = turf.point([obj.longitude, obj.latitude], {id: obj.id, name: obj.name})
-                        feature.style = {color: "red"}
-                        features.push(feature)
+                        let feature = point([obj.longitude, obj.latitude], {id: obj.id, name: obj.name});
+                        feature.style = {color: "red"};
+                        features.push(feature);
                     }
                 });
 
                 // D3 points (coordinates)
 
-                let fc = turf.featureCollection(features)
-                let pointLayer = L.geoJSON(fc, {
+                let fc = featureCollection(features);
+                L.geoJSON(fc, {
                     pointToLayer: function (feature, latlng) {
                         return L.circleMarker(latlng, {radius: 1.2, color: '#23A480'});  
                     }
@@ -37,9 +39,9 @@ class Map extends React.Component {
                     "weight": 1.4,
                     "opacity": 0.4
                 };
-                console.log(fc)
+                console.log(fc);
 
-                this.voronoiPolygons = turf.voronoi(fc);
+                this.voronoiPolygons = voronoi(fc);
                 this.voronoiLayer = L.geoJSON(this.voronoiPolygons, {
                     style: myStyle
                 }).addTo(map);
@@ -66,10 +68,10 @@ class Map extends React.Component {
 
     componentDidUpdate() {
         let myStyle = {
-                "color": this.props.theme === "dark" ? "#FFF" : "#222",
-                "fill": "red",
-                "weight": 1.4,
-                "opacity": 0.4
+            "color": this.props.theme === "dark" ? "#FFF" : "#222",
+            "fill": "red",
+            "weight": 1.4,
+            "opacity": 0.4
         };
         this.voronoiLayer.clearLayers();
         console.log(this.voronoiPolygons);

@@ -1,4 +1,4 @@
-    /* eslint-disable */
+/* eslint-disable */
 var webpack = require("webpack");
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 var path = require("path");
@@ -32,7 +32,8 @@ var config = {
             chunks: 'all',
             name: "other",
             cacheGroups: {
-                react: {test:/react/, name: "vendor"}
+                react: {test:/react/, name: "vendor"},
+                turf: {test:/turf/, name: "geo"}
             }
         }
     },

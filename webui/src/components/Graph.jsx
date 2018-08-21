@@ -31,15 +31,15 @@ class Graph extends React.Component {
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
             .attr("transform",
-                  "translate(" + margin.left + "," + margin.top + ")");
+                "translate(" + margin.left + "," + margin.top + ")");
 
         // Get the data
-        d3.csv("js/fakedates.csv").then(data => {
+        d3.csv("data/fakedates.csv").then(data => {
 
             // format the data
             data.forEach(function(d) {
-              d.date = parseTime(d.date);
-              d.close = +d.close;
+                d.date = parseTime(d.date);
+                d.close = +d.close;
             });
 
             // Scale the range of the data
@@ -48,18 +48,18 @@ class Graph extends React.Component {
 
             // Add the valueline path.
             svg.append("path")
-              .data([data])
-              .attr("class", "line")
-              .attr("d", valueline);
+                .data([data])
+                .attr("class", "line")
+                .attr("d", valueline);
 
             // Add the X Axis
             svg.append("g")
-              .attr("transform", "translate(0," + height + ")")
-              .call(d3.axisBottom(x));
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(x));
 
             // Add the Y Axis
             svg.append("g")
-              .call(d3.axisLeft(y));
+                .call(d3.axisLeft(y));
         });
     }
 

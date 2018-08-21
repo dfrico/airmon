@@ -23,17 +23,17 @@ class Web extends React.Component {
         let theme = this.state.theme === "light" ? "dark" : "light";
 
         switch(theme) {
-            case "dark":
-                document.body.style.backgroundColor = "#222";
-                document.querySelectorAll('.card')[1].style.backgroundColor = "#222"
-                document.querySelectorAll('.card')[1].style.color = "#fafafa"
-                break;
-            case "light":
-                document.body.style.backgroundColor = "#FFF";
-                document.querySelectorAll('.card')[1].style.backgroundColor = "#fafafa"
-                document.querySelectorAll('.card')[1].style.color = "#222"
-                break;
-            default:
+        case "dark":
+            document.body.style.backgroundColor = "#222";
+            document.querySelectorAll('.card')[1].style.backgroundColor = "#222";
+            document.querySelectorAll('.card')[1].style.color = "#fafafa";
+            break;
+        case "light":
+            document.body.style.backgroundColor = "#FFF";
+            document.querySelectorAll('.card')[1].style.backgroundColor = "#fafafa";
+            document.querySelectorAll('.card')[1].style.color = "#222";
+            break;
+        default:
         }
 
         this.setState({theme: theme});
