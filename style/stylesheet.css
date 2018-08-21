@@ -1,0 +1,125 @@
+@font-face {
+    font-family: 'Futura-pt';
+    font-weight: bold;
+    src: url('../fonts/futura-pt-heavy.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Futura-pt';
+    font-weight: normal;
+    src: url('../fonts/futura-pt-normal.woff2') format('woff2');
+}
+
+body {
+	font-family: 'proxima-nova', 'omnes-pro';
+	font-size: 100%;
+	margin: 0;
+	background: #fcfcfc;
+	min-width: 372px;
+	max-width: 400px;
+	/*min-height: 180px;*/
+	-webkit-font-smoothing: antialiased;
+}
+
+.header h1 {
+    font-family: 'Futura-pt';
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.header a {
+    font-family: 'Futura-pt';
+    font-weight: normal;
+    text-transform: uppercase;
+}
+
+.header #Logo-svg {
+    font-size: 80px;
+    transform: translateX(5vw);
+}
+
+.card {
+    background: #fff;
+    border-radius: 2px;
+    /*display: inline-block;
+    margin: 1rem;
+    position: relative;*/
+    width: 90vw;
+    height: 50vh;
+    margin: 0 5vw 2vh;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+
+.card #map, .card #graph {
+    height: 100%;
+    /*width: 600px;*/
+    width: 100%;
+}
+
+#graph .line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 2px;
+}
+
+ /* The switch - the box around the slider */
+.switch {
+  position: sticky;
+  bottom: 8px;
+  left: 2px;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {display:none;}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(18px);
+  -ms-transform: translateX(18px);
+  transform: translateX(18px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
