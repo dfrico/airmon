@@ -11,10 +11,11 @@
   "dependencies": {
     "color-thief-jimp": "^2.0.2",
     "eslint": "^4.19.1",
+    "httpdispatcher": "^2.1.2",
     "iterm2-image": "^1.0.1",
     "mongodb": "^3.1.1",
     "node-cron": "^1.2.1",
-    "npm": "^6.3.0",
+    "npm": "^6.4.0",
     "telebot": "^1.2.5"
   },
   "devDependencies": {
