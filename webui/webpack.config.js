@@ -12,7 +12,7 @@ var config = {
     entry: {
         app: "./src/main.js",
         vendor: [
-            "react", "react-dom"
+            "react", "react-dom", "@turf/turf"
         ]
     },
     output: {
