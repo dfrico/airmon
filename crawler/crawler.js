@@ -42,6 +42,7 @@ function processData() {
                 // hour_t is correct ("current" hour and search key)
 
                 // Updating particles data
+                console.log(`Updating particles data from ${particles.date_p}`);
                 try{
                     db
                         .collection(k)
@@ -49,14 +50,15 @@ function processData() {
                             // has: traffic data & hour_t
                             {"date_t": { $eq: particles.date_p }},
                             // how has: traffic, t_h, particles
-                            { $set: particles });
-                    // .then(r => console.log(`Particles for ${particles.hour_p}. Got: ${r.result}`))
-                    // .catch(e => console.log(e));
+                            { $set: particles })
+                        .then(r => console.log(`Updating particles, got: ${r.result}`));
+                    // .catch(e => console.error(e));
                 } catch(e) {
                     console.error(e);
                 }
 
                 // Updating meteo data
+                console.log(`Updating meteo data from ${meteo.date_m}`);
                 try{
                     db
                         .collection(k)
@@ -64,14 +66,15 @@ function processData() {
                             // has: traffic data & hour_t
                             {"date_t": { $eq: meteo.date_m }},
                             // how has: traffic, t_h, meteo
-                            { $set: meteo });
-                    // .then(r => console.log(`Meteo for ${meteo.hour_m}. Got: ${r.result}`))
-                    // .catch(e => console.log(e));
+                            { $set: meteo })
+                        .then(r => console.log(`Updating meteo, got: ${r.result}`));
+                    // .catch(e => console.error(e));
                 } catch(e) {
                     console.error(e);
                 }
 
                 // Inserting new row (with traffic)
+                console.log(`Inserting traffic data from ${traffic.date_t}`);
                 try {
                     // let doc =
                     db
@@ -80,6 +83,7 @@ function processData() {
                             try {
                                 assert.equal(null, err);
                                 assert.equal(1, r.insertedCount);
+                                console.log(`Result: ${r.result}`);
                             }catch(e) {
                                 console.error(`error in callback: ${e}`);
                             }
