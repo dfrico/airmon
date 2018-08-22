@@ -656,8 +656,8 @@ var Graph = function (_React$Component) {
     }
 
     _createClass(Graph, [{
-        key: "componentDidMount",
-        value: function componentDidMount() {
+        key: "drawGraph",
+        value: function drawGraph() {
             // set the dimensions and margins of the graph
             var margin = { top: 20, right: 20, bottom: 20, left: 30 },
 
@@ -712,6 +712,11 @@ var Graph = function (_React$Component) {
                 // Add the Y Axis
                 svg.append("g").call(d3.axisLeft(y));
             });
+        }
+    }, {
+        key: "componentDidMount",
+        value: function componentDidMount() {
+            this.drawGraph();
         }
     }, {
         key: "render",
@@ -781,12 +786,19 @@ var Map = function (_React$Component) {
             d3.csv("data/coordinates.csv").then(function (collection) {
                 try {
                     var features = [];
+                    // let colors = ["#FFFECE", "#FEECA4", "#FDD87D", "#FCB156", "#FB8D46", "#F94F35", "#E01F27", "#BB082D", "#7E0428"];
+                    var colors = ["#A3062A", "#D5322F", "#F26D4A", "#FBAD68", "#FDDF90", "#FFFEC2", "#D9EE90", "#A7D770", "#69BC67", "#249753", "#0B6739"];
+
                     Object.keys(collection).map(function (k) {
                         var obj = collection[k];
                         if (!obj.length) {
                             // not headers array, only row obj {}
-                            var feature = (0, _turf.point)([obj.longitude, obj.latitude], { id: obj.id, name: obj.name });
-                            feature.style = { color: "red" };
+                            var feature = (0, _turf.point)([obj.longitude, obj.latitude], {
+                                id: obj.id,
+                                name: obj.name,
+                                color: colors[Math.floor(Math.random() * colors.length)]
+                            });
+                            // feature.style = {color: "red"};
                             features.push(feature);
                         }
                     });
@@ -796,26 +808,52 @@ var Map = function (_React$Component) {
                     var fc = (0, _turf.featureCollection)(features);
                     L.geoJSON(fc, {
                         pointToLayer: function pointToLayer(feature, latlng) {
-                            return L.circleMarker(latlng, { radius: 1.2, color: '#23A480' });
+                            return L.circleMarker(latlng, {
+                                // radius: 1.2,
+                                radius: 2,
+                                color: "#23A480"
+                            });
                         }
                     }).addTo(map);
 
-                    var myStyle = {
-                        "color": _this2.props.theme === "dark" ? "#222" : "#999",
-                        "fill": "red",
-                        "weight": 1.4,
-                        "opacity": 0.4
-                    };
-                    console.log(fc);
-
+                    _this2.baseColor = features[0].properties.color;
                     _this2.voronoiPolygons = (0, _turf.voronoi)(fc);
-                    _this2.voronoiLayer = L.geoJSON(_this2.voronoiPolygons, {
-                        style: myStyle
-                    }).addTo(map);
+                    _this2.voronoiPolygons.features.map(function (f, i) {
+                        f.properties = features[i].properties;
+                    });
+                    _this2.addVoronoiLayer();
+                    // console.log(features[2], fc.features[2], this.voronoiPolygons.features[2]);
                 } catch (e) {
                     console.error(e);
                 }
             });
+        }
+    }, {
+        key: 'addVoronoiLayer',
+        value: function addVoronoiLayer() {
+            var _this3 = this;
+
+            var myStyle = {
+                color: this.props.theme === "dark" ? "#FFF" : "#DDD",
+                // color: "#BBB",
+                fillColor: this.baseColor ? this.baseColor : "#23A480",
+                // fillOpacity: 0.4,
+                weight: 1.4,
+                opacity: 1
+            };
+            this.voronoiLayer = L.geoJSON(this.voronoiPolygons, {
+                style: myStyle,
+                onEachFeature: function onEachFeature(feature, layer) {
+                    layer.defaultOptions.style.fillColor = feature.properties.color ? feature.properties.color : "#23A480";
+                    console.log(feature.properties);
+                    layer.on({
+                        click: function click() {
+                            console.log(layer.feature.properties);
+                            _this3.props.setStore({ station: layer.feature.properties });
+                        }
+                    });
+                }
+            }).addTo(this.map);
         }
     }, {
         key: 'componentDidMount',
@@ -826,6 +864,7 @@ var Map = function (_React$Component) {
             this.baselayer = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
                 maxZoom: 18,
+                minZoom: 12,
                 id: 'mapbox.' + this.props.theme,
                 accessToken: this.token
             }).addTo(this.map);
@@ -835,17 +874,8 @@ var Map = function (_React$Component) {
     }, {
         key: 'componentDidUpdate',
         value: function componentDidUpdate() {
-            var myStyle = {
-                "color": this.props.theme === "dark" ? "#FFF" : "#222",
-                "fill": "red",
-                "weight": 1.4,
-                "opacity": 0.4
-            };
             this.voronoiLayer.clearLayers();
-            console.log(this.voronoiPolygons);
-            this.voronoiLayer = L.geoJSON(this.voronoiPolygons, {
-                style: myStyle
-            }).addTo(this.map);
+            this.addVoronoiLayer();
 
             this.baselayer.remove();
             this.baselayer = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}', {
@@ -1018,7 +1048,8 @@ var Web = function (_React$Component) {
 
         _this.state = {
             names: [],
-            theme: "light"
+            theme: "light",
+            station: { id: 0, name: "" }
         };
         return _this;
     }
@@ -1033,17 +1064,22 @@ var Web = function (_React$Component) {
         value: function changeTheme() {
             // TODO: improve palette, remove themes ?
             var theme = this.state.theme === "light" ? "dark" : "light";
+            var card = document.querySelectorAll('.card')[1];
 
             switch (theme) {
                 case "dark":
                     document.body.style.backgroundColor = "#222";
-                    document.querySelectorAll('.card')[1].style.backgroundColor = "#222";
-                    document.querySelectorAll('.card')[1].style.color = "#fafafa";
+                    if (card) {
+                        card.style.backgroundColor = "#222";
+                        card.style.color = "#fafafa";
+                    }
                     break;
                 case "light":
                     document.body.style.backgroundColor = "#FFF";
-                    document.querySelectorAll('.card')[1].style.backgroundColor = "#fafafa";
-                    document.querySelectorAll('.card')[1].style.color = "#222";
+                    if (card) {
+                        card.style.backgroundColor = "#fafafa";
+                        card.style.color = "#222";
+                    }
                     break;
                 default:
             }
@@ -1063,8 +1099,13 @@ var Web = function (_React$Component) {
                 'div',
                 null,
                 _react2.default.createElement(_Header2.default, null),
-                _react2.default.createElement(_Map2.default, { theme: this.state.theme }),
-                _react2.default.createElement(_Graph2.default, null),
+                _react2.default.createElement(
+                    'p',
+                    null,
+                    this.state.station.id === 0 ? "Please click a zone" : 'Data from station no.' + this.state.station.id + ' (' + this.state.station.name + ')'
+                ),
+                _react2.default.createElement(_Map2.default, { theme: this.state.theme, setStore: this.setStore.bind(this) }),
+                this.state.station.id === 0 ? "" : _react2.default.createElement(_Graph2.default, { zone: this.state.station }),
                 _react2.default.createElement(
                     'label',
                     { className: 'switch' },
