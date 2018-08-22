@@ -3,7 +3,7 @@ import React from 'react';
 
 class Graph extends React.Component {
 
-    componentDidMount() {
+    drawGraph() {
         // set the dimensions and margins of the graph
         let margin = {top: 20, right: 20, bottom: 20, left: 30},
             // width = 960 - margin.left - margin.right,
@@ -61,6 +61,10 @@ class Graph extends React.Component {
             svg.append("g")
                 .call(d3.axisLeft(y));
         });
+    }
+
+    componentDidMount() {
+        this.drawGraph();
     }
 
     render() {

@@ -22,17 +22,22 @@ class Web extends React.Component {
     changeTheme() {
         // TODO: improve palette, remove themes ?
         let theme = this.state.theme === "light" ? "dark" : "light";
+        let card = document.querySelectorAll('.card')[1];
 
         switch(theme) {
         case "dark":
             document.body.style.backgroundColor = "#222";
-            document.querySelectorAll('.card')[1].style.backgroundColor = "#222";
-            document.querySelectorAll('.card')[1].style.color = "#fafafa";
+            if(card) {
+                card.style.backgroundColor = "#222";
+                card.style.color = "#fafafa";
+            }
             break;
         case "light":
             document.body.style.backgroundColor = "#FFF";
-            document.querySelectorAll('.card')[1].style.backgroundColor = "#fafafa";
-            document.querySelectorAll('.card')[1].style.color = "#222";
+            if(card) {
+                card.style.backgroundColor = "#fafafa";
+                card.style.color = "#222";
+            }
             break;
         default:
         }
@@ -52,7 +57,7 @@ class Web extends React.Component {
                 <Header></Header>
                 <p>{this.state.station.id===0 ? "Please click a zone" : `Data from station no.${this.state.station.id} (${this.state.station.name})`}</p>
                 <Map theme={this.state.theme} setStore={this.setStore.bind(this)}></Map>
-                {this.state.station.id === 0 ? "" : <Graph></Graph>}
+                {this.state.station.id === 0 ? "" : <Graph zone={this.state.station}></Graph>}
                 <label className="switch">
                     <input type="checkbox" onChange={this.changeTheme.bind(this)}/>
                     <span className="slider round"></span>
