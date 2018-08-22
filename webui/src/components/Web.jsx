@@ -10,7 +10,8 @@ class Web extends React.Component {
         super(props);
         this.state = {
             names: [],
-            theme: "light"
+            theme: "light",
+            station: {id: 0, name: ""}
         };
     }
 
@@ -49,8 +50,9 @@ class Web extends React.Component {
         return (
             <div>
                 <Header></Header>
-                <Map theme={this.state.theme}></Map>
-                <Graph></Graph>
+                <p>{this.state.station.id===0 ? "Please click a zone" : `Data from station no.${this.state.station.id} (${this.state.station.name})`}</p>
+                <Map theme={this.state.theme} setStore={this.setStore.bind(this)}></Map>
+                {this.state.station.id === 0 ? "" : <Graph></Graph>}
                 <label className="switch">
                     <input type="checkbox" onChange={this.changeTheme.bind(this)}/>
                     <span className="slider round"></span>

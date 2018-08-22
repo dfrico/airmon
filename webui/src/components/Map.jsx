@@ -29,7 +29,7 @@ class Map extends React.Component {
                 let fc = featureCollection(features);
                 L.geoJSON(fc, {
                     pointToLayer: function (feature, latlng) {
-                        return L.circleMarker(latlng, {radius: 1.2, color: '#23A480'});  
+                        return L.circleMarker(latlng, {radius: 1.2, color: '#23A480'});
                     }
                 }).addTo(map);
 
@@ -39,12 +39,23 @@ class Map extends React.Component {
                     "weight": 1.4,
                     "opacity": 0.4
                 };
-                console.log(fc);
 
                 this.voronoiPolygons = voronoi(fc);
+                this.voronoiPolygons.features.map((f, i) => {
+                    f.properties = features[i].properties;
+                });
                 this.voronoiLayer = L.geoJSON(this.voronoiPolygons, {
-                    style: myStyle
+                    style: myStyle,
+                    onEachFeature: (feature, layer) => {
+                        layer.on({
+                            click: () => {
+                                console.log(layer.feature.properties);
+                                this.props.setStore({station: layer.feature.properties});
+                            }
+                        });
+                    }
                 }).addTo(map);
+                // console.log(features[2], fc.features[2], this.voronoiPolygons.features[2]);
 
             } catch(e) {
                 console.error(e);
@@ -74,9 +85,16 @@ class Map extends React.Component {
             "opacity": 0.4
         };
         this.voronoiLayer.clearLayers();
-        console.log(this.voronoiPolygons);
         this.voronoiLayer = L.geoJSON(this.voronoiPolygons, {
-            style: myStyle
+            style: myStyle,
+            onEachFeature: (feature, layer) => {
+                layer.on({
+                    click: () => {
+                        console.log(layer.feature.properties);
+                        this.props.setStore({station: layer.feature.properties});
+                    }
+                });
+            }
         }).addTo(this.map);
 
         this.baselayer.remove();
