@@ -45,6 +45,25 @@ class Web extends React.Component {
         this.setState({theme: theme});
     }
 
+    getData(zone) { // from 1 station (graph)
+        let {id} = zone;
+        fetch(`http://localhost:3000/rest/api/station/${encodeURIComponent(id)}`, {
+            method: "GET",
+            headers: {
+                Accept: 'application/json',
+            },
+        }).then(response => response.json()
+        ).then(response => {
+            console.log("response", response);
+        }).catch((e) => {
+            console.log(`Error in fetch ${e.message}`);
+        });
+    }
+
+    getStatus() {
+        // TODO: get last row of every station and its color (=air quality index)
+    }
+
     componentDidMount() {
     }
 
@@ -56,7 +75,7 @@ class Web extends React.Component {
             <div>
                 <Header></Header>
                 <p>{this.state.station.id===0 ? "Please click a zone" : `Data from station no.${this.state.station.id} (${this.state.station.name})`}</p>
-                <Map theme={this.state.theme} setStore={this.setStore.bind(this)}></Map>
+                <Map theme={this.state.theme} getData={this.getData.bind(this)} setStore={this.setStore.bind(this)}></Map>
                 {this.state.station.id === 0 ? "" : <Graph zone={this.state.station}></Graph>}
                 <label className="switch">
                     <input type="checkbox" onChange={this.changeTheme.bind(this)}/>

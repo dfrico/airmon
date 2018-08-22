@@ -71,10 +71,11 @@ class Map extends React.Component {
             style: myStyle,
             onEachFeature: (feature, layer) => {
                 layer.defaultOptions.style.fillColor = feature.properties.color ? feature.properties.color : "#23A480";
-                console.log(feature.properties);
+                // console.log(feature.properties);
                 layer.on({
                     click: () => {
                         console.log(layer.feature.properties);
+                        this.props.getData(layer.feature.properties);
                         this.props.setStore({station: layer.feature.properties});
                     }
                 });
@@ -105,6 +106,7 @@ class Map extends React.Component {
         this.baselayer = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
             maxZoom: 18,
+            minZoom: 12,
             id: 'mapbox.'+this.props.theme,
             accessToken: this.token
         }).addTo(this.map);
