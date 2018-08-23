@@ -8,13 +8,6 @@ const port = process.env.PORT || 3000;
 
 const url = "mongodb://localhost:27017/";
 
-const allowCrossDomain = function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', "*");
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-    res.header('Access-Control-Allow-Headers', 'Content-Type');
-    next();
-}
-
 function getDate(hour) {
     // date format
     // 2018-08-16T08:00:00
@@ -30,14 +23,17 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, client) {
 
     // routes go here
     app.listen(port, () => {
-        console.log(`http://localhost:${port}`)
+        console.log(`Server listening on http://localhost:${port}`)
     });
+
+    /*
+    *   All data (up to a date) for a station
+    */
 
     app.get("/rest/api/station/:id", (req, res) => {
         console.log(req.params);
         let k = "test";
         let date = getDate(new Date().getHours()-2);
-        // db.collection(k).find({"date_t": { $eq: date}}).toArray((err, results) => {
         db.collection(k).find().toArray((err, results) => {
             let data = [];
             results.map(r => {
@@ -48,6 +44,24 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, client) {
             });
             res.json({data: data});
         });
-        // res.send("Hello, world!")
+    });
+
+    /*
+    *   Last data for all stations (map)
+    */
+
+    app.get("/rest/api/status/", (req, res) => {
+        console.log(req.params);
+        let date = getDate(new Date().getHours()-1);
+        let keys = ["4", "8", "11", "16", "17", "18", "24", "27", "35", "36", "38", "39", "40", "47", "48", "49", "50","54", "55", "56", "57", "58", "59","60"];
+        let data = {}
+        keys.map(k => {
+            db.collection(k).find({"date_t": { $eq: date}}).toArray((err, results) => {
+                results.map(r => {
+                    data[k] = r.index;
+                });
+            });
+        });
+        res.json(data);
     });
 });

@@ -29,7 +29,7 @@ function processData(rows, callback) {
         "44": "Hexano"
     };
 
-    let day, index;
+    let day, hour;
     let response = {};
 
     Object.keys(values).map(k =>{
@@ -55,17 +55,29 @@ function processData(rows, callback) {
                 });
         });
 
-        index = new Date().getHours()-2;
+        hour = new Date().getHours()-1;
+        if(day[hour].NO===0 && day[hour].NO2===0 && day[hour].NOx===0) {
+            hour = new Date().getHours()-2;
+        }
         // console.log(`${i+1}. Data for ${zones[k]}`);
-        // console.table(day[index])
+        // console.table(day[hour])
         // console.log()
-        response[k] = {...day[index], "date_p": getDate(index)};
+        let index = getIndex(day[hour]);
+        response[k] = {...day[hour], index: index, "date_p": getDate(hour)};
     });
-    console.log(`Particles data from ${index}h`);
+    console.log(`Particles data from ${hour}h`);
     // console.log(response)
     if (callback) callback(response);
     else console.log(response);
 
+}
+
+function getIndex(data) {
+    if(data["Particulas<2.5um"] && data["Particulas<10um"] && data.O3) {
+        console.log("Can do!");
+    }
+    else console.log("Can't do");
+    return 100;
 }
 
 function particles(callback) {
