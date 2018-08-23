@@ -33,11 +33,10 @@ function processData() {
         const db = client.db("airmon");
 
         Object.keys(rows)
-        // .slice(0,4) // trying only with 4 zones to begin with
-            .slice(0,1)
+            // .slice(0,4) // trying only with 4 zones to begin with
             .map(k => {
                 let {particles, meteo, traffic} = rows[k];
-                k = "test";
+                // k = "test";
                 // note: particles & meteo hours may be 1-2h delayed.
                 // hour_t is correct ("current" hour and search key)
 
@@ -51,7 +50,7 @@ function processData() {
                             {"date_t": { $eq: particles.date_p }},
                             // how has: traffic, t_h, particles
                             { $set: particles })
-                        .then(r => console.log(`Updating particles, got: ${r.result}`));
+                        .then(r => console.log("Updating particles, got", r.result));
                     // .catch(e => console.error(e));
                 } catch(e) {
                     console.error(e);
@@ -67,7 +66,7 @@ function processData() {
                             {"date_t": { $eq: meteo.date_m }},
                             // how has: traffic, t_h, meteo
                             { $set: meteo })
-                        .then(r => console.log(`Updating meteo, got: ${r.result}`));
+                        .then(r => console.log("Updating meteo, got", r.result));
                     // .catch(e => console.error(e));
                 } catch(e) {
                     console.error(e);
