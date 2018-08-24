@@ -56,8 +56,10 @@ function processData(rows, callback) {
         });
 
         hour = new Date().getHours()-1;
-        if(day[hour]["NO"] && day[hour]["NO"]===0 && day[hour]["NO2"] && day[hour]["NO2"]===0
-            && day[hour]["NOx"] && day[hour]["NOx"]===0) {
+        console.log(k, day[hour].NO2);
+        if(day[hour]["NO"]!==undefined && day[hour]["NO"]===0 && day[hour]["NO2"]!==undefined
+            && day[hour]["NO2"]===0 && day[hour]["NOx"]!==undefined && day[hour]["NOx"]===0) {
+            console.log("Fixing...");
             hour = new Date().getHours()-2;
         }
         // console.log(`${i+1}. Data for ${zones[k]}`);
