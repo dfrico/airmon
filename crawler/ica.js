@@ -51,7 +51,8 @@ function ica(callback) {
                 let name = tr.children[1].children.filter(a => a.type==="text").map(b=>b.data)[0].replace(/[\n\t\r]/g,"");
                 let ica = tr.children[3].children.filter(a => a.type==="tag").map(b=>b.children.filter(d=>d.type==="text"))[0][0].data;
 
-                if(Object.keys(zones).indexOf(name)>0){
+                // console.log(name, ica);
+                if(Object.keys(zones).indexOf(name)>=0){
                     result[zones[name]] = Number(ica); // 4: 35
                     // result[zones[name]] = {zona: name, ICA: Number(ica)}
                 }

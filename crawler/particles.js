@@ -56,22 +56,96 @@ function processData(rows, callback) {
         });
 
         hour = new Date().getHours()-1;
-        console.log(k, day[hour].NO2);
         if(day[hour]["NO"]!==undefined && day[hour]["NO"]===0 && day[hour]["NO2"]!==undefined
             && day[hour]["NO2"]===0 && day[hour]["NOx"]!==undefined && day[hour]["NOx"]===0) {
-            console.log("Fixing...");
+            // console.log("Fixing...");
             hour = new Date().getHours()-2;
         }
-        // console.log(`${i+1}. Data for ${zones[k]}`);
-        // console.table(day[hour])
-        // console.log()
-        response[k] = {...day[hour], "date_p": getDate(hour)};
+
+        let index = Number(getIndex(day[hour]).toFixed(2));
+        // console.log(`zona ${k}, ICA ${index}`);
+
+        response[k] = {...day[hour], ICA: index, date_p: getDate(hour)};
     });
     console.log(`Particles data from ${hour}h`);
     // console.log(response)
     if (callback) callback(response);
     else console.log(response);
 
+}
+
+function getIndex(obj) {
+    /* reference for Common Air Quality Index (CAQI)/ICA:
+    * https://en.wikipedia.org/wiki/Air_quality_index#Europe
+    */
+
+    // filtering valid values
+    let filtered = {}
+    let valid = ["NO2", "NOx", "O3", "Particulas<10um", "Particulas<2.5um"];
+    Object.keys(obj).map(k=>{
+        if(valid.indexOf(k)>=0) filtered[k] = obj[k];
+    });
+
+    let maxval = Math.max(...Object.values(filtered));
+    let particle = Object.keys(filtered).filter(k=>filtered[k]===maxval)[0];
+
+    switch (particle) {
+        case "NO2":
+        case "NOx":
+                if (maxval>0 && maxval<50)
+                    return (maxval*25)/50;
+                else if (maxval>=50 && maxval<100)
+                    return (maxval*50)/100;
+                else if (maxval>=100 && maxval<200)
+                    return (maxval*75)/200;
+                else if (maxval>=200 && maxval<400)
+                    return (maxval*100)/400;
+                else if (maxval>=400)
+                    return 100;
+                else
+                    return -1;
+        case "O3":
+                if (maxval>0 && maxval<60)
+                    return (maxval*25)/60;
+                else if (maxval>=60 && maxval<120)
+                    return (maxval*50)/120;
+                else if (maxval>=120 && maxval<180)
+                    return (maxval*75)/180;
+                else if (maxval>=180 && maxval<240)
+                    return (maxval*100)/240;
+                else if (maxval>=240)
+                    return 100;
+                else
+                    return -1;
+        case "Particulas<10um":
+                if (maxval>0 && maxval<50)
+                    return maxval;
+                else if (maxval>=50 && maxval<90)
+                    return (maxval*75)/90;
+                else if (maxval>=90 && maxval<180)
+                    return (maxval*100)/180;
+                else if (maxval>=180)
+                    return 100;
+                else
+                    return -1;
+        case "Particulas<2.5um":
+                if (maxval>0 && maxval<15)
+                    return (maxval*25)/15;
+                else if (maxval>=15 && maxval<30)
+                    return (maxval*50)/30;
+                else if (maxval>=30 && maxval<55)
+                    return (maxval*75)/55;
+                else if (maxval>=55 && maxval<110)
+                    return (maxval*100)/110;
+                else if (maxval>=110)
+                    return 100;
+                else
+                    return -1;
+        default:
+            console.error("Err in ICA val:", particle, maxval);
+            break;
+    }
+    return -1;
 }
 
 function particles(callback) {
