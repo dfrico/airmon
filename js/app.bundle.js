@@ -845,10 +845,11 @@ var Map = function (_React$Component) {
                 style: myStyle,
                 onEachFeature: function onEachFeature(feature, layer) {
                     layer.defaultOptions.style.fillColor = feature.properties.color ? feature.properties.color : "#23A480";
-                    console.log(feature.properties);
+                    // console.log(feature.properties);
                     layer.on({
                         click: function click() {
                             console.log(layer.feature.properties);
+                            _this3.props.getData(layer.feature.properties);
                             _this3.props.setStore({ station: layer.feature.properties });
                         }
                     });
@@ -881,6 +882,7 @@ var Map = function (_React$Component) {
             this.baselayer = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
                 maxZoom: 18,
+                minZoom: 12,
                 id: 'mapbox.' + this.props.theme,
                 accessToken: this.token
             }).addTo(this.map);
@@ -1087,6 +1089,30 @@ var Web = function (_React$Component) {
             this.setState({ theme: theme });
         }
     }, {
+        key: 'getData',
+        value: function getData(zone) {
+            // from 1 station (graph)
+            var id = zone.id;
+
+            fetch('http://localhost:3000/rest/api/station/' + encodeURIComponent(id), {
+                method: "GET",
+                headers: {
+                    Accept: 'application/json'
+                }
+            }).then(function (response) {
+                return response.json();
+            }).then(function (response) {
+                console.log("response", response);
+            }).catch(function (e) {
+                console.log('Error in fetch ' + e.message);
+            });
+        }
+    }, {
+        key: 'getStatus',
+        value: function getStatus() {
+            // TODO: get last row of every station and its color (=air quality index)
+        }
+    }, {
         key: 'componentDidMount',
         value: function componentDidMount() {}
     }, {
@@ -1104,7 +1130,7 @@ var Web = function (_React$Component) {
                     null,
                     this.state.station.id === 0 ? "Please click a zone" : 'Data from station no.' + this.state.station.id + ' (' + this.state.station.name + ')'
                 ),
-                _react2.default.createElement(_Map2.default, { theme: this.state.theme, setStore: this.setStore.bind(this) }),
+                _react2.default.createElement(_Map2.default, { theme: this.state.theme, getData: this.getData.bind(this), setStore: this.setStore.bind(this) }),
                 this.state.station.id === 0 ? "" : _react2.default.createElement(_Graph2.default, { zone: this.state.station }),
                 _react2.default.createElement(
                     'label',
