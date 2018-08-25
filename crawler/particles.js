@@ -62,16 +62,15 @@ function processData(rows, callback) {
             hour = new Date().getHours()-2;
         }
 
-        let index = Number(getIndex(day[hour]).toFixed(2));
+        let {ica, ica_p} = getIndex(day[hour]);
         // console.log(`zona ${k}, ICA ${index}`);
 
-        response[k] = {...day[hour], ICA: index, date_p: getDate(hour)};
+        response[k] = {...day[hour], ICA: Number(ica.toFixed(2)), ica_p, date_p: getDate(hour)};
     });
     console.log(`Particles data from ${hour}h`);
     // console.log(response)
     if (callback) callback(response);
     else console.log(response);
-
 }
 
 function getIndex(obj) {
@@ -80,72 +79,78 @@ function getIndex(obj) {
     */
 
     // filtering valid values
-    let filtered = {}
-    let valid = ["NO2", "NOx", "O3", "Particulas<10um", "Particulas<2.5um"];
+    let filtered = {}, normalized = {};
+    // {particle: max possible value}
+    const valid = {"NO2": 400, "O3": 240, "Particulas<10um": 180, "Particulas<2.5um": 110};
     Object.keys(obj).map(k=>{
-        if(valid.indexOf(k)>=0) filtered[k] = obj[k];
+        if(Object.keys(valid).indexOf(k)>=0) filtered[k] = obj[k];
     });
 
-    let maxval = Math.max(...Object.values(filtered));
-    let particle = Object.keys(filtered).filter(k=>filtered[k]===maxval)[0];
+    Object.keys(filtered).map(k => {
+        normalized[k] = filtered[k]/valid[k];// valid value / max value
+    });
+
+    const maxnorm = Math.max(...Object.values(normalized));
+    const particle = Object.keys(filtered).filter(k=>normalized[k]===maxnorm)[0];
+    const maxval = filtered[particle];
 
     switch (particle) {
         case "NO2":
         case "NOx":
                 if (maxval>0 && maxval<50)
-                    return (maxval*25)/50;
+                    return { ica: (maxval*25)/50, ica_p: particle};
                 else if (maxval>=50 && maxval<100)
-                    return (maxval*50)/100;
+                    return { ica: (maxval*50)/100, ica_p: particle};
                 else if (maxval>=100 && maxval<200)
-                    return (maxval*75)/200;
+                    return { ica: (maxval*75)/200, ica_p: particle};
                 else if (maxval>=200 && maxval<400)
-                    return (maxval*100)/400;
+                    return { ica: (maxval*100)/400, ica_p: particle};
                 else if (maxval>=400)
-                    return 100;
+                    return { ica: 100, ica_p: particle};
                 else
-                    return -1;
+                    return { ica: -1, ica_p: particle};
         case "O3":
                 if (maxval>0 && maxval<60)
-                    return (maxval*25)/60;
+                    return { ica: (maxval*25)/60, ica_p: particle};
                 else if (maxval>=60 && maxval<120)
-                    return (maxval*50)/120;
+                    return { ica: (maxval*50)/120, ica_p: particle};
                 else if (maxval>=120 && maxval<180)
-                    return (maxval*75)/180;
+                    return { ica: (maxval*75)/180, ica_p: particle};
                 else if (maxval>=180 && maxval<240)
-                    return (maxval*100)/240;
+                    return { ica: (maxval*100)/240, ica_p: particle};
                 else if (maxval>=240)
-                    return 100;
+                    return { ica: 100, ica_p: particle};
                 else
-                    return -1;
+                    return { ica: -1, ica_p: particle};
         case "Particulas<10um":
                 if (maxval>0 && maxval<50)
-                    return maxval;
+                    return { ica: maxval, ica_p: particle};
                 else if (maxval>=50 && maxval<90)
-                    return (maxval*75)/90;
+                    return { ica: (maxval*75)/90, ica_p: particle};
                 else if (maxval>=90 && maxval<180)
-                    return (maxval*100)/180;
+                    return { ica: (maxval*100)/180, ica_p: particle};
                 else if (maxval>=180)
-                    return 100;
+                    return { ica: 100, ica_p: particle};
                 else
-                    return -1;
+                    return { ica: -1, ica_p: particle};
         case "Particulas<2.5um":
                 if (maxval>0 && maxval<15)
-                    return (maxval*25)/15;
+                    return { ica: (maxval*25)/15, ica_p: particle};
                 else if (maxval>=15 && maxval<30)
-                    return (maxval*50)/30;
+                    return { ica: (maxval*50)/30, ica_p: particle};
                 else if (maxval>=30 && maxval<55)
-                    return (maxval*75)/55;
+                    return { ica: (maxval*75)/55, ica_p: particle};
                 else if (maxval>=55 && maxval<110)
-                    return (maxval*100)/110;
+                    return { ica: (maxval*100)/110, ica_p: particle};
                 else if (maxval>=110)
-                    return 100;
+                    return { ica: 100, ica_p: particle};
                 else
-                    return -1;
+                    return { ica: -1, ica_p: particle};
         default:
             console.error("Err in ICA val:", particle, maxval);
             break;
     }
-    return -1;
+    return { ica: -1, ica_p: particle};
 }
 
 function particles(callback) {
