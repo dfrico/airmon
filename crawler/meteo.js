@@ -28,7 +28,6 @@ function getData(id, callback) {
                         buffer += d;
                     }).on("end", () => {
                         const body = JSON.parse(buffer);
-
                         //console.log(estaciones.filter(e => e.id==id)[0].nombre, metadata.descripcion)
                         callback(parseData(body));
                     });
@@ -50,7 +49,6 @@ function getData(id, callback) {
 function parseData(data) {
 
     //const date = parse(d["fint"]).strftime("%d-%m %H:%M")
-
     const txts = [
         " temp: VALUE°C,",
         " presión: VALUE (hPa),",
@@ -72,11 +70,7 @@ function parseData(data) {
     for(let d of data) {
         let {values} = parseKeys(keys, txts, d);
         day.push([d.fint].concat(values));
-
-        // TODO: pasar de array con valores a dict usable por console.log ¿?
-        // console.log(d.fint, values)
     }
-    // console.log()
     return day;
 
 }
@@ -109,6 +103,7 @@ function processData(alldata, estaciones, callback) {
     let date = alldata[2].data[0][0];
     let hour = date.split("T")[1].split(":")[0];
     console.log(`Meteo data from ${hour}h`);
+
     for(let obj of alldata){
         // foreach station
         let {id, data} = obj;
@@ -126,11 +121,12 @@ function processData(alldata, estaciones, callback) {
 
         // console.log(estaciones.filter(e => e.id==id)[0].nombre, ":\n", data, '\n')
         estaciones = locations.filter(l => l[6]==id);
-        estaciones.map(e => response[e[0]] = {...data[data.length-1], "date_m": getDate(Number(hour))});
+        estaciones.map(e => response[e[0]] = {...data[data.length-1], "date_m": date});
     }
     callback(response);
 }
 
+/*
 function NN(estaciones) {
     for (let zona of locations) {
         // zona: 35;Pza. del Carmen;40.41920833333333;-3.7031722222222223;4474524.28;440345.85;3195;MADRID, RETIRO
@@ -164,6 +160,7 @@ function getDate(hour) {
     }
     return `${d.getFullYear()}-${String(d.getMonth()).length===1 ? "0"+(d.getMonth()+1) : d.getMonth()+1}-${d.getDate()}T${String(hour).length===1 ? "0"+hour : hour}:00:00`;
 }
+*/
 
 function meteo(callback) {
     const estaciones = [

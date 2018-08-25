@@ -22,14 +22,14 @@ function traffic(callback) {
                 zones[d.split(";")[0]] = [];
                 return d.split(";");
             });
-        console.log("Loading traffic");
+        console.log(`Traffic data from ${new Date().getHours()}h`);
 
         const req = http.get(options, (res) => {
             let xml = "";
 
-            process.stdout.write("Downloading data");
+            // process.stdout.write("Downloading data");
             res.on("data", (d) => {
-                process.stdout.write(".");
+                // process.stdout.write(".");
                 xml += d;
             }).on("end", () => {
                 process.stdout.write("\n");
