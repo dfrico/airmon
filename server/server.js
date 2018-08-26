@@ -33,7 +33,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, client) {
     app.get("/rest/api/station/:id", (req, res) => {
         console.log(req.params);
         let k = "test";
-        let date = getDate(new Date().getHours()-2);
+
         db.collection(k).find().toArray((err, results) => {
             let data = [];
             results.map(r => {
@@ -51,17 +51,27 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, client) {
     */
 
     app.get("/rest/api/status/", (req, res) => {
-        console.log(req.params);
-        let date = getDate(new Date().getHours()-1);
+        let date, d = new Date();
+        if(d.getMinutes()<40)
+            date = getDate(d.getHours()-2);
+        else date = getDate(d.getHours()-1);
+
+        console.log(`Request on '/rest/api/status/'. Data from ${date}`);
+
         let keys = ["4", "8", "11", "16", "17", "18", "24", "27", "35", "36", "38", "39", "40", "47", "48", "49", "50","54", "55", "56", "57", "58", "59","60"];
         let data = {}
+
         keys.map(k => {
             db.collection(k).find({"date_t": { $eq: date}}).toArray((err, results) => {
                 results.map(r => {
-                    data[k] = r.index;
+                    data[k] = {ica: r.ICA, part: r.ica_p};
                 });
+
+                if(Object.keys(data).length==keys.length) {
+                    res.json(data);
+                }
             });
+            // res.json({patata: 1})
         });
-        res.json(data);
     });
 });

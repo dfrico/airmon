@@ -47,7 +47,9 @@ class Web extends React.Component {
 
     getData(zone) { // from 1 station (graph)
         let {id} = zone;
-        fetch(`http://localhost:3000/rest/api/station/${encodeURIComponent(id)}`, {
+        const url1 = `http://localhost:3000/rest/api/station/${encodeURIComponent(id)}`;
+        const url2 = "http://localhost:3000/rest/api/status";
+        fetch(url2, {
             method: "GET",
             headers: {
                 Accept: 'application/json',
@@ -60,10 +62,6 @@ class Web extends React.Component {
         });
     }
 
-    getStatus() {
-        // TODO: get last row of every station and its color (=air quality index)
-    }
-
     componentDidMount() {
     }
 
@@ -74,9 +72,8 @@ class Web extends React.Component {
         return (
             <div>
                 <Header></Header>
-                <p>{this.state.station.id===0 ? "Please click a zone" : `Data from station no.${this.state.station.id} (${this.state.station.name})`}</p>
                 <Map theme={this.state.theme} getData={this.getData.bind(this)} setStore={this.setStore.bind(this)}></Map>
-                {this.state.station.id === 0 ? "" : <Graph zone={this.state.station}></Graph>}
+                <Graph zone={this.state.station}></Graph>
                 <label className="switch">
                     <input type="checkbox" onChange={this.changeTheme.bind(this)}/>
                     <span className="slider round"></span>
@@ -84,6 +81,5 @@ class Web extends React.Component {
             </div>
         );
     }
-    
 }
 export default Web;

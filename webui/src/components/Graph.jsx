@@ -63,14 +63,20 @@ class Graph extends React.Component {
         });
     }
 
-    componentDidMount() {
+    componentDidUpdate() {
         this.drawGraph();
     }
 
     render() {
+        let content = this.props.zone.id === 0 ?
+            <p className="disclaimer">Please click on a zone</p> :
+            <div>
+                <p>Data from station no.{this.props.zone.id} ({this.props.zone.name})</p>
+                <div id="graph"></div>
+            </div>;
         return (
             <div className="card">
-                <div id="graph"></div>
+                {content}
             </div>
         );
     }

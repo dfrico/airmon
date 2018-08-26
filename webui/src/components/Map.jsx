@@ -20,6 +20,7 @@ class Map extends React.Component {
 
                 Object.keys(collection).map(k => {
                     let obj = collection[k];
+                    console.log(obj.id, this.props.status);
                     if(!obj.length){ // not headers array, only row obj {}
                         let feature = point([obj.longitude, obj.latitude], {
                             id: obj.id,
@@ -81,6 +82,21 @@ class Map extends React.Component {
                 });
             }
         }).addTo(this.map);
+    }
+
+    getStatus(callback) {
+        const url = "http://localhost:3000/rest/api/status";
+        fetch(url, {
+            method: "GET",
+            headers: {
+                Accept: 'application/json',
+            },
+        }).then(response => response.json()
+        ).then(response => {
+            console.log("response", response);
+        }).catch((e) => {
+            console.log(`Error in fetch ${e.message}`);
+        });
     }
 
     componentDidMount() {
