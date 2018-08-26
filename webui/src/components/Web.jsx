@@ -9,7 +9,6 @@ class Web extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            names: [],
             theme: "light",
             station: {id: 0, name: ""}
         };
@@ -45,35 +44,14 @@ class Web extends React.Component {
         this.setState({theme: theme});
     }
 
-    getData(zone) { // from 1 station (graph)
-        let {id} = zone;
-        const url1 = `http://localhost:3000/rest/api/station/${encodeURIComponent(id)}`;
-        const url2 = "http://localhost:3000/rest/api/status";
-        fetch(url2, {
-            method: "GET",
-            headers: {
-                Accept: 'application/json',
-            },
-        }).then(response => response.json()
-        ).then(response => {
-            console.log("response", response);
-        }).catch((e) => {
-            console.log(`Error in fetch ${e.message}`);
-        });
-    }
-
-    componentDidMount() {
-    }
-
-    componentDidUpdate() {
-    }
-
     render() {
         return (
             <div>
                 <Header></Header>
-                <Map theme={this.state.theme} getData={this.getData.bind(this)} setStore={this.setStore.bind(this)}></Map>
-                <Graph zone={this.state.station}></Graph>
+                <div className="card__container">
+                    <Map theme={this.state.theme} setStore={this.setStore.bind(this)}></Map>
+                    <Graph zone={this.state.station}></Graph>
+                </div>
                 <label className="switch">
                     <input type="checkbox" onChange={this.changeTheme.bind(this)}/>
                     <span className="slider round"></span>
