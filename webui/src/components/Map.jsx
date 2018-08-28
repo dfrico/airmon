@@ -14,28 +14,37 @@ class Map extends React.Component {
             try{
                 let features = [];
                 // let colors = ["#FFFECE", "#FEECA4", "#FDD87D", "#FCB156", "#FB8D46", "#F94F35", "#E01F27", "#BB082D", "#7E0428"];
-                let colors = ["#A3062A", "#D5322F", "#F26D4A", "#FBAD68", "#FDDF90", "#FFFEC2", "#D9EE90", "#A7D770", "#69BC67", "#249753", "#0B6739"].reverse();
+                let colors = [
+                '#0B6739',
+                '#249753',
+                '#69BC67',
+                '#A7D770',
+                '#D9EE90',
+                '#FFFEC2',
+                '#FDDF90',
+                '#FBAD68',
+                '#F26D4A',
+                '#D5322F',
+                '#A3062A' ];
 
                 this.getStatus(status => {
                     Object.keys(collection).map(k => {
                         let obj = collection[k];
                         if(!obj.length){ // not headers array, only row obj {}
                             let ica = status[obj.id].ica;
-                            console.log(obj.id, obj.name, ica, Math.round(ica/10));
 
+                            // turf.point
                             let feature = point([obj.longitude, obj.latitude], {
                                 id: obj.id,
                                 name: obj.name,
                                 ica: ica,
                                 color: colors[Math.round(ica/10)]
                             });
-                            // feature.style = {color: "red"};
                             features.push(feature);
                         }
                     });
     
-                    // D3 points (coordinates)
-    
+                    // turf.featureCollection
                     let fc = featureCollection(features);
                     L.geoJSON(fc, {
                         pointToLayer: function (feature, latlng) {
@@ -47,13 +56,11 @@ class Map extends React.Component {
                         }
                     }).addTo(map);
     
-                    this.baseColor = features[0].properties.color;
-                    this.voronoiPolygons = voronoi(fc);
+                    this.voronoiPolygons = voronoi(fc); // turf.voronoi
                     this.voronoiPolygons.features.map((f, i) => {
                         f.properties = features[i].properties;
                     });
                     this.addVoronoiLayer();
-                    // console.log(features[2], fc.features[2], this.voronoiPolygons.features[2]);
                 });
             } catch(e) {
                 console.error(e);
@@ -62,25 +69,25 @@ class Map extends React.Component {
     }
 
     addVoronoiLayer() {
-        let myStyle = {
-            color: this.props.theme === "dark" ? "#FFF" : "#DDD",
-            // color: "#BBB",
-            fillColor: this.baseColor ? this.baseColor : "#F00",
-            // fillOpacity: 0.4,
-            weight: 1.4,
-            opacity: 1
-        };
+        let style = (feature) => {
+            return {
+                color: this.props.theme === "dark" ? "#FFF" : "#DDD",
+                fillColor: feature.properties.color,
+                fillOpacity: 0.5,
+                weight: 1.4,
+                opacity: 1
+            };
+        }
+
         this.voronoiLayer = L.geoJSON(this.voronoiPolygons, {
-            style: myStyle,
             onEachFeature: (feature, layer) => {
-                layer.defaultOptions.style.fillColor = feature.properties.color ? feature.properties.color : "#F00";
                 layer.on({
                     click: () => {
-                        // console.log(layer.feature.properties);
                         this.props.setStore({station: layer.feature.properties});
                     }
                 });
-            }
+            },
+            style: style
         }).addTo(this.map);
     }
 
@@ -95,7 +102,7 @@ class Map extends React.Component {
     }
 
     getStatus(callback) {
-        const url = "http://192.168.1.37:3000/rest/api/status";
+        const url = "http://dfr-nas.ddns.net:3000/rest/api/status";
         fetch(url, {
             method: "GET",
             headers: {
