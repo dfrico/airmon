@@ -3,8 +3,13 @@ const MongoClient = require("mongodb").MongoClient;
 const assert = require("assert");
 const cors = require('cors');
 
+const fs = require('fs');
+const https = require('https');
+
 const app = express();
-const port = process.env.PORT || 3000;
+const httpport = process.env.PORT || 3000;
+const httpsport = 8443;
+
 
 const url = "mongodb://localhost:27017/";
 
@@ -19,11 +24,21 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, client) {
     assert.equal(null, err);
     const db = client.db("airmon");
 
-    app.use(cors())
+    app.use(cors());
+    app.use(express.static('public'));
 
-    // routes go here
-    app.listen(port, () => {
-        console.log(`Server listening on http://localhost:${port}`)
+    const privateKey  = fs.readFileSync(process.env.sslkey, 'utf8');
+    const certificate = fs.readFileSync(process.env.sslcert, 'utf8');
+    const credentials = {key: privateKey, cert: certificate};
+
+    // your express configuration here
+    app.listen(httpport, () => {
+        console.log(`http server listening on http://localhost:${httpport}`)
+    });
+
+    let httpsServer = https.createServer(credentials, app);
+    httpsServer.listen(httpsport, () => {
+        console.log(`https server listening on http://localhost:${httpsport}`)
     });
 
     /*
@@ -71,7 +86,6 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, client) {
                     res.json(data);
                 }
             });
-            // res.json({patata: 1})
         });
     });
 });

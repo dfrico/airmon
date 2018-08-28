@@ -15,17 +15,17 @@ class Map extends React.Component {
                 let features = [];
                 // let colors = ["#FFFECE", "#FEECA4", "#FDD87D", "#FCB156", "#FB8D46", "#F94F35", "#E01F27", "#BB082D", "#7E0428"];
                 let colors = [
-                '#0B6739',
-                '#249753',
-                '#69BC67',
-                '#A7D770',
-                '#D9EE90',
-                '#FFFEC2',
-                '#FDDF90',
-                '#FBAD68',
-                '#F26D4A',
-                '#D5322F',
-                '#A3062A' ];
+                    '#0B6739',
+                    '#249753',
+                    '#69BC67',
+                    '#A7D770',
+                    '#D9EE90',
+                    '#FFFEC2',
+                    '#FDDF90',
+                    '#FBAD68',
+                    '#F26D4A',
+                    '#D5322F',
+                    '#A3062A'];
 
                 this.getStatus(status => {
                     Object.keys(collection).map(k => {
@@ -102,7 +102,7 @@ class Map extends React.Component {
     }
 
     getStatus(callback) {
-        const url = "http://dfr-nas.ddns.net:3000/rest/api/status";
+        const url = "https://dfr-nas.ddns.net/rest/api/status";
         fetch(url, {
             method: "GET",
             headers: {
