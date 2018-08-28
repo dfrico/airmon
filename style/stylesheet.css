@@ -35,24 +35,59 @@ body {
 
 .header #Logo-svg {
     font-size: 80px;
-    transform: translateX(5vw);
+    transform: translateX(6vw);
 }
 
 .card {
     background: #fff;
     border-radius: 2px;
-    /*display: inline-block;
-    margin: 1rem;
-    position: relative;*/
-    width: 90vw;
-    height: 50vh;
-    margin: 0 5vw 2vh;
     box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+
+@media (max-width:961px)  {
+  .card__container {
+    display: inline-grid;
+    display: -ms-inline-grid;
+    grid-template-columns: 4vw 92vw 4vw;
+    grid-template-rows: 44vh 6vh 44vh 6vh;
+  }
+
+  .card {
+    grid-column: 2 / 3;
+  }
+
+  .card__map {
+    grid-row: 1 / 2;
+  }
+
+  .card__graph {
+    grid-row: 3 / 4;
+  }
+}
+
+@media (min-width:961px)  {
+  .card__container {
+    display: inline-grid;
+    display: -ms-inline-grid;
+    grid-template-columns: 6vw 41vw 6vw 41vw 6vw;
+    grid-template-rows: 85vh;
+  }
+
+  .card {
+    grid-row: 1 / 2;
+  }
+
+  .card__graph {
+    grid-column: 2 / 3;
+  }
+
+  .card__map {
+    grid-column: 4 / 5;
+  }
 }
 
 .card #map, .card #graph {
     height: 100%;
-    /*width: 600px;*/
     width: 100%;
 }
 
