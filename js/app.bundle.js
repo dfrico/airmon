@@ -913,7 +913,7 @@ var Map = function (_React$Component) {
     }, {
         key: 'getStatus',
         value: function getStatus(callback) {
-            var url = "http://dfr-nas.ddns.net:3000/rest/api/status";
+            var url = "https://dfr-nas.ddns.net/rest/api/status";
             fetch(url, {
                 method: "GET",
                 headers: {
