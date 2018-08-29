@@ -46,19 +46,33 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, client) {
     */
 
     app.get("/rest/api/station/:id", (req, res) => {
-        console.log(req.params);
-        let k = "test";
-
-        db.collection(k).find().toArray((err, results) => {
-            let data = [];
-            results.map(r => {
-                console.log(r.date_t)
-                let {_id, ...other} = r;
-                // if(other) console.table(other);
-                data.push(other)
+        let {id, time} = req.params;
+        console.log(`Request on '/rest/api/station/${id}`);
+        if(id){
+            db.collection(id).find().toArray((err, results) => {
+                let data = [];
+                results.map(r => {
+                    let {_id, ...other} = r;
+                    data.push(other);
+                });
+                switch (time) {
+                    case "24h":
+                        data = data.slice(data.length-24);
+                        console.log(data.length, "entries in response");
+                        break;
+                    case "7d":
+                        data = data.slice(data.length-168);
+                        console.log(data.length, "entries in response");
+                        break;
+                    default:
+                        console.log("No time given");
+                        break;
+                }
+                res.json({data: data});
             });
-            res.json({data: data});
-        });
+        } else {
+            console.error("No id given", req.params);
+        }
     });
 
     /*
