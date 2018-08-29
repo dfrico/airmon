@@ -63,14 +63,10 @@ class Graph extends React.Component {
         });
     }
 
-    componentDidUpdate() {
-        this.drawGraph();
-    }
-
     getData(zone) { // from 1 station (graph)
         let {id} = zone;
         // TODO: fwd port
-        const url = `http://192.168.1.37:3000/rest/api/station/${encodeURIComponent(id)}`;
+        const url = `http://dfr-nas.ddns.net/rest/api/station/${encodeURIComponent(id)}`;
         fetch(url, {
             method: "GET",
             headers: {
@@ -85,14 +81,15 @@ class Graph extends React.Component {
     }
 
     componentDidUpdate() {
-        // this.getData(this.props.zone);
+        console.log(this.props.zone);
+        this.drawGraph();
     }
 
     render() {
         let content = this.props.zone.id === 0 ?
             <p className="disclaimer">Please click on a zone</p> :
             <div>
-                <p>Data from station no.{this.props.zone.id} ({this.props.zone.name}). ICA: {this.props.zone.ica}</p>
+                {/* <p>Data from station no.{this.props.zone.id} ({this.props.zone.name}). ICA: {this.props.zone.ica}</p> */}
                 <div id="graph"></div>
             </div>;
         return (

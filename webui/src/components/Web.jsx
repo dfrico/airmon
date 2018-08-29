@@ -3,6 +3,7 @@ import React from 'react';
 import Header from './Header.jsx';
 import Map from './Map.jsx';
 import Graph from './Graph.jsx';
+import Panel from './Panel.jsx';
 
 class Web extends React.Component {
     
@@ -10,7 +11,8 @@ class Web extends React.Component {
         super(props);
         this.state = {
             theme: "light",
-            station: {id: 0, name: ""}
+            station: {id: 0, name: ""},
+            showGraph: false
         };
     }
 
@@ -50,7 +52,8 @@ class Web extends React.Component {
                 <Header></Header>
                 <div className="card__container">
                     <Map theme={this.state.theme} setStore={this.setStore.bind(this)}></Map>
-                    <Graph zone={this.state.station}></Graph>
+                    <Panel zone={this.state.station} setStore={this.setStore.bind(this)}></Panel>
+                    {this.state.showGraph ? <Graph zone={this.state.station}></Graph> : ""}
                 </div>
                 <label className="switch">
                     <input type="checkbox" onChange={this.changeTheme.bind(this)}/>

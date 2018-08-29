@@ -31,14 +31,15 @@ class Map extends React.Component {
                     Object.keys(collection).map(k => {
                         let obj = collection[k];
                         if(!obj.length){ // not headers array, only row obj {}
-                            let ica = status[obj.id].ica;
+                            let {ica, part} = status[obj.id];
 
                             // turf.point
                             let feature = point([obj.longitude, obj.latitude], {
+                                color: colors[Math.round(ica/10)],
+                                ica: ica,
                                 id: obj.id,
                                 name: obj.name,
-                                ica: ica,
-                                color: colors[Math.round(ica/10)]
+                                part
                             });
                             features.push(feature);
                         }
