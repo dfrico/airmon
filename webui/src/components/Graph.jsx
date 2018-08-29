@@ -9,7 +9,7 @@ class Graph extends React.Component {
             // width = 960 - margin.left - margin.right,
             width = d3.select(".card").node().clientWidth-40,
             // height = 500 - margin.top - margin.bottom;
-            height = d3.select(".card").node().clientHeight-40;
+            height = d3.select(".card__graph").node().clientHeight-40;
 
         // parse the date / time
         let parseTime = d3.timeParse("%Y-%m-%dT%H:00:00");
@@ -21,7 +21,7 @@ class Graph extends React.Component {
         // define the line
         let valueline = d3.line()
             .x(function(d) { return x(d.date); })
-            .y(function(d) { return y(d.close); });
+            .y(function(d) { return y(d.ICA); });
 
         // append the svg obgect to the body of the page
         // appends a 'group' element to 'svg'
@@ -33,18 +33,20 @@ class Graph extends React.Component {
             .attr("transform",
                 "translate(" + margin.left + "," + margin.top + ")");
 
-        // Get the data
-        d3.csv("data/fakedates.csv").then(data => {
-            console.log(data);
+        // Get the data. time = "24h" o "7d"
+        this.getData(this.props.zone, {time: "24h"}, (data) => {
+
+        //d3.csv("data/fakedates.csv").then(data => {
             // format the data
-            data.forEach(function(d) {
-                d.date = parseTime(d.date);
-                d.close = +d.close;
+            data.map((d) => {
+                d.date = parseTime(d.date_t);
             });
+            data = data.filter(d=>d.ICA);
 
             // Scale the range of the data
             x.domain(d3.extent(data, function(d) { return d.date; }));
-            y.domain([0, d3.max(data, function(d) { return d.close; })]);
+            // y.domain([0, d3.max(data, function(d) { return d.ICA; })]);
+            y.domain([0, 100]);
 
             // Add the valueline path.
             svg.append("path")
@@ -63,35 +65,38 @@ class Graph extends React.Component {
         });
     }
 
-    getData(zone) { // from 1 station (graph)
+    getData(zone, opt={}, callback) { // from 1 station (graph)
         let {id} = zone;
-        // TODO: fwd port
-        const url = `http://dfr-nas.ddns.net/rest/api/station/${encodeURIComponent(id)}`;
+        let time = opt.time ? `?time=${opt.time}` : "";
+        const url = `https://dfr-nas.ddns.net/rest/api/station/${encodeURIComponent(id)}${time}`;
         fetch(url, {
             method: "GET",
             headers: {
                 Accept: 'application/json',
             },
-        }).then(response => response.json()
+        })
+        // .then(response => console.log(response))
+        .then(response => response.json()
         ).then(response => {
-            // console.log("response", response);
+            callback(response.data);
         }).catch((e) => {
             console.log(`Error in fetch ${e.message}`);
         });
     }
 
     componentDidUpdate() {
-        console.log(this.props.zone);
+        d3.select("#graph>svg").remove();
+        this.drawGraph();
+    }
+
+    componentDidMount() {
         this.drawGraph();
     }
 
     render() {
         let content = this.props.zone.id === 0 ?
             <p className="disclaimer">Please click on a zone</p> :
-            <div>
-                {/* <p>Data from station no.{this.props.zone.id} ({this.props.zone.name}). ICA: {this.props.zone.ica}</p> */}
-                <div id="graph"></div>
-            </div>;
+            <div id="graph"></div>;
         return (
             <div className="card card__graph">
                 {content}
