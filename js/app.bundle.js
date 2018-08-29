@@ -148,7 +148,7 @@ var app =
 /******/
 /******/
 /******/ 	// add entry module to deferred list
-/******/ 	deferredModules.push([19,0,1]);
+/******/ 	deferredModules.push([20,0,1]);
 /******/ 	// run deferred modules when ready
 /******/ 	return checkDeferredModules();
 /******/ })
@@ -646,6 +646,97 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /* eslint-disable no-undef,no-inner-declarations */
 
 
+var Panel = function (_React$Component) {
+    _inherits(Panel, _React$Component);
+
+    function Panel() {
+        _classCallCheck(this, Panel);
+
+        return _possibleConstructorReturn(this, (Panel.__proto__ || Object.getPrototypeOf(Panel)).apply(this, arguments));
+    }
+
+    _createClass(Panel, [{
+        key: "render",
+        value: function render() {
+            var _this2 = this;
+
+            var content = this.props.zone.id === 0 ? _react2.default.createElement(
+                "p",
+                { className: "disclaimer" },
+                "Por favor selecciona una zona para ver m\xE1s informaci\xF3n"
+            ) : _react2.default.createElement(
+                "div",
+                { className: "text", style: { backgroundColor: this.props.zone.color } },
+                _react2.default.createElement(
+                    "p",
+                    null,
+                    "Datos de la estaci\xF3n num.",
+                    this.props.zone.id,
+                    " (",
+                    this.props.zone.name,
+                    ")"
+                ),
+                _react2.default.createElement(
+                    "p",
+                    null,
+                    "Calidad del aire: ",
+                    this.props.zone.ica,
+                    "/100"
+                ),
+                _react2.default.createElement(
+                    "p",
+                    null,
+                    "Principal contaminante: ",
+                    this.props.zone.part
+                ),
+                _react2.default.createElement("br", null),
+                _react2.default.createElement(
+                    "p",
+                    { onClick: function onClick() {
+                            return _this2.props.setStore({ showGraph: true });
+                        } },
+                    "Ver m\xE1s informaci\xF3n"
+                )
+            );
+            return _react2.default.createElement(
+                "div",
+                { className: "card card__panel" },
+                content
+            );
+        }
+    }]);
+
+    return Panel;
+}(_react2.default.Component);
+
+exports.default = Panel;
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /* eslint-disable no-undef,no-inner-declarations */
+
+
 var Graph = function (_React$Component) {
     _inherits(Graph, _React$Component);
 
@@ -665,7 +756,7 @@ var Graph = function (_React$Component) {
             width = d3.select(".card").node().clientWidth - 40,
 
             // height = 500 - margin.top - margin.bottom;
-            height = d3.select(".card").node().clientHeight - 40;
+            height = d3.select(".card__graph").node().clientHeight - 40;
 
             // parse the date / time
             var parseTime = d3.timeParse("%Y-%m-%dT%H:00:00");
@@ -678,7 +769,7 @@ var Graph = function (_React$Component) {
             var valueline = d3.line().x(function (d) {
                 return x(d.date);
             }).y(function (d) {
-                return y(d.close);
+                return y(d.ICA);
             });
 
             // append the svg obgect to the body of the page
@@ -686,22 +777,24 @@ var Graph = function (_React$Component) {
             // moves the 'group' element to the top left margin
             var svg = d3.select("#graph").append("svg").attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-            // Get the data
-            d3.csv("data/fakedates.csv").then(function (data) {
-                console.log(data);
+            // Get the data. time = "24h" o "7d"
+            this.getData(this.props.zone, { time: "24h" }, function (data) {
+
+                //d3.csv("data/fakedates.csv").then(data => {
                 // format the data
-                data.forEach(function (d) {
-                    d.date = parseTime(d.date);
-                    d.close = +d.close;
+                data.map(function (d) {
+                    d.date = parseTime(d.date_t);
+                });
+                data = data.filter(function (d) {
+                    return d.ICA;
                 });
 
                 // Scale the range of the data
                 x.domain(d3.extent(data, function (d) {
                     return d.date;
                 }));
-                y.domain([0, d3.max(data, function (d) {
-                    return d.close;
-                })]);
+                // y.domain([0, d3.max(data, function(d) { return d.ICA; })]);
+                y.domain([0, 100]);
 
                 // Add the valueline path.
                 svg.append("path").data([data]).attr("class", "line").attr("d", valueline);
@@ -714,27 +807,26 @@ var Graph = function (_React$Component) {
             });
         }
     }, {
-        key: "componentDidUpdate",
-        value: function componentDidUpdate() {
-            this.drawGraph();
-        }
-    }, {
         key: "getData",
         value: function getData(zone) {
+            var opt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+            var callback = arguments[2];
             // from 1 station (graph)
             var id = zone.id;
-            // TODO: fwd port
 
-            var url = "http://192.168.1.37:3000/rest/api/station/" + encodeURIComponent(id);
+            var time = opt.time ? "?time=" + opt.time : "";
+            var url = "https://dfr-nas.ddns.net/rest/api/station/" + encodeURIComponent(id) + time;
             fetch(url, {
                 method: "GET",
                 headers: {
                     Accept: 'application/json'
                 }
-            }).then(function (response) {
+            })
+            // .then(response => console.log(response))
+            .then(function (response) {
                 return response.json();
             }).then(function (response) {
-                // console.log("response", response);
+                callback(response.data);
             }).catch(function (e) {
                 console.log("Error in fetch " + e.message);
             });
@@ -742,7 +834,13 @@ var Graph = function (_React$Component) {
     }, {
         key: "componentDidUpdate",
         value: function componentDidUpdate() {
-            // this.getData(this.props.zone);
+            d3.select("#graph>svg").remove();
+            this.drawGraph();
+        }
+    }, {
+        key: "componentDidMount",
+        value: function componentDidMount() {
+            this.drawGraph();
         }
     }, {
         key: "render",
@@ -751,21 +849,7 @@ var Graph = function (_React$Component) {
                 "p",
                 { className: "disclaimer" },
                 "Please click on a zone"
-            ) : _react2.default.createElement(
-                "div",
-                null,
-                _react2.default.createElement(
-                    "p",
-                    null,
-                    "Data from station no.",
-                    this.props.zone.id,
-                    " (",
-                    this.props.zone.name,
-                    "). ICA: ",
-                    this.props.zone.ica
-                ),
-                _react2.default.createElement("div", { id: "graph" })
-            );
+            ) : _react2.default.createElement("div", { id: "graph" });
             return _react2.default.createElement(
                 "div",
                 { className: "card card__graph" },
@@ -780,7 +864,7 @@ var Graph = function (_React$Component) {
 exports.default = Graph;
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -837,14 +921,18 @@ var Map = function (_React$Component) {
                             var obj = collection[k];
                             if (!obj.length) {
                                 // not headers array, only row obj {}
-                                var ica = status[obj.id].ica;
+                                var _status$obj$id = status[obj.id],
+                                    ica = _status$obj$id.ica,
+                                    part = _status$obj$id.part;
 
                                 // turf.point
+
                                 var feature = (0, _turf.point)([obj.longitude, obj.latitude], {
+                                    color: colors[Math.round(ica / 10)],
+                                    ica: ica,
                                     id: obj.id,
                                     name: obj.name,
-                                    ica: ica,
-                                    color: colors[Math.round(ica / 10)]
+                                    part: part
                                 });
                                 features.push(feature);
                             }
@@ -968,7 +1056,7 @@ var Map = function (_React$Component) {
 exports.default = Map;
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1067,7 +1155,7 @@ var Header = function (_React$Component) {
 exports.default = Header;
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1083,17 +1171,21 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _Header = __webpack_require__(15);
+var _Header = __webpack_require__(16);
 
 var _Header2 = _interopRequireDefault(_Header);
 
-var _Map = __webpack_require__(14);
+var _Map = __webpack_require__(15);
 
 var _Map2 = _interopRequireDefault(_Map);
 
-var _Graph = __webpack_require__(13);
+var _Graph = __webpack_require__(14);
 
 var _Graph2 = _interopRequireDefault(_Graph);
+
+var _Panel = __webpack_require__(13);
+
+var _Panel2 = _interopRequireDefault(_Panel);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1114,7 +1206,8 @@ var Web = function (_React$Component) {
 
         _this.state = {
             theme: "light",
-            station: { id: 0, name: "" }
+            station: { id: 0, name: "" },
+            showGraph: false
         };
         return _this;
     }
@@ -1162,7 +1255,8 @@ var Web = function (_React$Component) {
                     'div',
                     { className: 'card__container' },
                     _react2.default.createElement(_Map2.default, { theme: this.state.theme, setStore: this.setStore.bind(this) }),
-                    _react2.default.createElement(_Graph2.default, { zone: this.state.station })
+                    _react2.default.createElement(_Panel2.default, { zone: this.state.station, setStore: this.setStore.bind(this) }),
+                    this.state.showGraph ? _react2.default.createElement(_Graph2.default, { zone: this.state.station }) : ""
                 ),
                 _react2.default.createElement(
                     'label',
@@ -1180,9 +1274,9 @@ var Web = function (_React$Component) {
 exports.default = Web;
 
 /***/ }),
-/* 17 */,
 /* 18 */,
-/* 19 */
+/* 19 */,
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1196,7 +1290,7 @@ var _reactDom = __webpack_require__(12);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
-var _Web = __webpack_require__(16);
+var _Web = __webpack_require__(17);
 
 var _Web2 = _interopRequireDefault(_Web);
 
