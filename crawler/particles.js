@@ -56,8 +56,11 @@ function processData(rows, callback) {
         });
 
         hour = new Date().getHours();
-        if(hour===0) hour = 23;
-        else while(day[hour]["NO"]===0 && day[hour]["NO2"]===0 && day[hour]["NOx"]===0) {
+        if(hour===0) {
+            hour = 23;
+            console.log(day);
+        }
+        else while(day[hour] && day[hour]["NO"]===0 && day[hour]["NO2"]===0 && day[hour]["NOx"]===0) {
             hour -=1;
         }
 

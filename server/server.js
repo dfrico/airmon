@@ -46,8 +46,9 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, client) {
     */
 
     app.get("/rest/api/station/:id", (req, res) => {
-        let {id, time} = req.params;
-        console.log(`Request on '/rest/api/station/${id}`);
+        let {id} = req.params;
+        let time = req.param('time');
+        console.log(`Request on '/rest/api/station/${id}. Time: ${time}`);
         if(id){
             db.collection(id).find().toArray((err, results) => {
                 let data = [];
@@ -58,20 +59,20 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, client) {
                 switch (time) {
                     case "24h":
                         data = data.slice(data.length-24);
-                        console.log(data.length, "entries in response");
+                        console.log(`${data.length} entries in response`);
                         break;
                     case "7d":
                         data = data.slice(data.length-168);
-                        console.log(data.length, "entries in response");
+                        console.log(`${data.length} entries in response`);
                         break;
                     default:
-                        console.log("No time given");
+                        console.log("No time given:", req.params);
                         break;
                 }
                 res.json({data: data});
             });
         } else {
-            console.error("No id given", req.params);
+            console.error("No id given:", req.params);
         }
     });
 
@@ -92,9 +93,12 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, client) {
 
         keys.map(k => {
             db.collection(k).find({"date_t": { $eq: date}}).toArray((err, results) => {
+                if(err) console.error(err);
+                console.log(results);
                 results.map(r => {
                     data[k] = {ica: r.ICA, part: r.ica_p};
                 });
+                console.log(Object.keys(data).length, keys.length);
 
                 if(Object.keys(data).length==keys.length) {
                     res.json(data);
