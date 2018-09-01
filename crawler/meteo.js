@@ -100,14 +100,17 @@ function processData(alldata, estaciones, callback) {
         "precipitación (l/m2)"
     ];
 
-    let date = alldata[2].data[0][0];
-    let hour = date.split("T")[1].split(":")[0];
-    console.log(`Meteo data from ${hour}h`);
+    let date;
 
     for(let obj of alldata){
         // foreach station
         let {id, data} = obj;
         if(data.length==0) continue;
+        if(!date){
+            date = data[data.length-1][0];
+            let hour = date.split("T")[1].split(":")[0];
+            console.log(`Meteo data from ${hour}h`);
+        }
         data = data
             .map(d => d.splice(1))
             .map(d => {
@@ -119,7 +122,7 @@ function processData(alldata, estaciones, callback) {
                 }, {});
             });
 
-        // console.log(estaciones.filter(e => e.id==id)[0].nombre, ":\n", data, '\n')
+        // console.log(estaciones.filter(e => e.id==id)[0].nombre, ":\n", data, '\n');
         estaciones = locations.filter(l => l[6]==id);
         estaciones.map(e => response[e[0]] = {...data[data.length-1], "date_m": date});
     }
