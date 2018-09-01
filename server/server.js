@@ -4,6 +4,7 @@ const assert = require("assert");
 const cors = require('cors');
 
 const fs = require('fs');
+const http = require('http');
 const https = require('https');
 
 const app = express();
@@ -17,7 +18,49 @@ function getDate(hour) {
     // date format
     // 2018-08-16T08:00:00
     let d = new Date();
-    return `${d.getUTCFullYear()}-${String(d.getMonth()).length===1 ? "0"+(d.getMonth()+1) : d.getMonth()+1}-${d.getDate()}T${String(hour).length===1 ? "0"+hour : hour}:00:00`;
+    return `${d.getUTCFullYear()}-${String(d.getMonth()).length===1 ? "0"+(d.getMonth()+1) : d.getMonth()+1}-${String(d.getDate()).length===1 ? "0"+(d.getDate()) : d.getDate()}T${String(hour).length===1 ? "0"+hour : hour}:00:00`;
+}
+
+function getWeather(callback) {
+    const id = "3117735"; // Madrid, ES
+    const token = "";
+
+    let options = {
+        hostname: "api.openweathermap.org",
+        //port: 443,
+        path: `/data/2.5/weather?id=${id}&units=metric&APPID=${token}`,
+        method: "GET",
+        headers: {
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "User-Agent": "Mozilla/5.0"
+        }
+    };
+
+    const req = http.request(options, (res) => {
+        let chunk = "";
+        res.on("data", (d) => {
+            chunk += String(d);
+        });
+        res.on("end", function() {
+            let data = JSON.parse(chunk);
+            let {weather, main, wind} = data;
+            let result = {
+                weather: weather[0].main,
+                weather_desc: weather[0].description,
+                temp: main.temp,
+                pressure: main.pressure,
+                humidity: main.humidity,
+                wind: wind.speed
+            };
+            // console.table(result);
+            callback(result);
+        });
+    });
+
+    req.on("error", (e) => {
+        console.error(`Req error. ${e}`);
+    });
+    req.end();
 }
 
 MongoClient.connect(url, { useNewUrlParser: true }, function(err, client) {
@@ -94,11 +137,15 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, client) {
         keys.map(k => {
             db.collection(k).find({"date_t": { $eq: date}}).toArray((err, results) => {
                 if(err) console.error(err);
-                console.log(results);
+                console.log(date, results);
                 results.map(r => {
-                    data[k] = {ica: r.ICA, part: r.ica_p};
+                    data[k] = {
+                        ica: r.ICA,
+                        part: r.ica_p,
+                        traffic: r['Traffic density (%)']
+                    };
                 });
-                console.log(Object.keys(data).length, keys.length);
+                console.log(data[k]);
 
                 if(Object.keys(data).length==keys.length) {
                     res.json(data);

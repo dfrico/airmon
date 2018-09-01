@@ -189,7 +189,7 @@ function particles(callback) {
 
 function getDate(date) {
     // format: 2018-08-16T08:00:00
-    return `${date[0]}-${date[1]}-${date[2]}T${date[3]}:00:00`;
+    return `${date[0]}-${date[1]}-${date[2].length===1 ? "0"+date[2] : date[2]}T${date[3].length===1 ? "0"+date[3] : date[3]}:00:00`;
 }
 
 exports.particles = particles;

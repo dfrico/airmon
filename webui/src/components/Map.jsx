@@ -78,7 +78,7 @@ class Map extends React.Component {
                 weight: 1.4,
                 opacity: 1
             };
-        }
+        };
 
         this.voronoiLayer = L.geoJSON(this.voronoiPolygons, {
             onEachFeature: (feature, layer) => {

@@ -105,7 +105,7 @@ function getDate() {
     // meteo date format
     // 2018-08-16T08:00:00
     let d = new Date();
-    return `${d.getUTCFullYear()}-${String(d.getMonth()).length===1 ? "0"+(d.getMonth()+1) : d.getMonth()+1}-${d.getDate()}T${String(d.getHours()).length===1 ? "0"+d.getHours() : d.getHours()}:00:00`;
+    return `${d.getUTCFullYear()}-${String(d.getMonth()).length===1 ? "0"+(d.getMonth()+1) : d.getMonth()+1}-${String(d.getDate()).length===1 ? "0"+(d.getDate()) : d.getDate()}T${String(d.getHours()).length===1 ? "0"+d.getHours() : d.getHours()}:00:00`;
 }
 if(process.argv[1].indexOf("traffic.js") != -1 )
     traffic(d => console.table(d));
