@@ -18,6 +18,9 @@ function getDate(hour) {
     // date format
     // 2018-08-16T08:00:00
     let d = new Date();
+    if(hour<0){
+        return `${d.getUTCFullYear()}-${String(d.getMonth()).length===1 ? "0"+(d.getMonth()+1) : d.getMonth()+1}-${String(d.getDate()-1).length===1 ? "0"+(d.getDate()-1) : d.getDate()-1}T${24+hour}:00:00`;
+    }
     return `${d.getUTCFullYear()}-${String(d.getMonth()).length===1 ? "0"+(d.getMonth()+1) : d.getMonth()+1}-${String(d.getDate()).length===1 ? "0"+(d.getDate()) : d.getDate()}T${String(hour).length===1 ? "0"+hour : hour}:00:00`;
 }
 
@@ -90,7 +93,8 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, client) {
 
     app.get("/rest/api/station/:id", (req, res) => {
         let {id} = req.params;
-        let time = req.param('time');
+        let {time} = req.query;
+
         console.log(`Request on '/rest/api/station/${id}. Time: ${time}`);
         if(id){
             db.collection(id).find().toArray((err, results) => {
@@ -130,27 +134,45 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, client) {
         else date = getDate(d.getHours()-1);
 
         console.log(`Request on '/rest/api/status/'. Data from ${date}`);
-
         let keys = ["4", "8", "11", "16", "17", "18", "24", "27", "35", "36", "38", "39", "40", "47", "48", "49", "50","54", "55", "56", "57", "58", "59","60"];
         let data = {}
 
         keys.map(k => {
-            db.collection(k).find({"date_t": { $eq: date}}).toArray((err, results) => {
-                if(err) console.error(err);
-                console.log(date, results);
-                results.map(r => {
+            if(k==="4") {
+                db.collection(k).find().toArray((err, results) => {
+                    if(err) console.error(err);
+                    results = results.filter(r => r.ICA!=undefined);
+
+                    r = results[results.length-1];
                     data[k] = {
                         ica: r.ICA,
                         part: r.ica_p,
                         traffic: r['Traffic density (%)']
                     };
-                });
-                console.log(data[k]);
+                    console.log(k, r.date_t, data[k].ica);
 
-                if(Object.keys(data).length==keys.length) {
-                    res.json(data);
-                }
-            });
+                    if(Object.keys(data).length==keys.length) {
+                        res.json(data);
+                    }
+                });
+            } else {
+                db.collection(k).find({"date_t": { $eq: date}}).toArray((err, results) => {
+                    if(err) console.error(err);
+                    // console.log(date, results);
+                    results.map(r => {
+                        data[k] = {
+                            ica: r.ICA,
+                            part: r.ica_p,
+                            traffic: r['Traffic density (%)']
+                        };
+                    });
+                    console.log(k, results[0].date_t, data[k].ica);
+
+                    if(Object.keys(data).length==keys.length) {
+                        res.json(data);
+                    }
+                });
+            }
         });
     });
 });
