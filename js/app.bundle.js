@@ -656,51 +656,106 @@ var Panel = function (_React$Component) {
     }
 
     _createClass(Panel, [{
-        key: "render",
+        key: 'getLink',
+        value: function getLink(particula) {
+            if (particula.indexOf('Part') >= 0) return "https://es.wikipedia.org/wiki/Part%C3%ADculas_en_suspensi%C3%B3n";else switch (particula) {
+                case "SO2":
+                case "CO":
+                case "O3":
+                case "Tolueno":
+                case "Benceno":
+                case "Etilbenceno":
+                case "Hidrocarburos":
+                case "Hexano":
+                    return 'https://es.wikipedia.org/wiki/' + particula;
+                case "Metano CH4":
+                    return "https://es.wikipedia.org/wiki/Metano";
+                case "NO":
+                case "NO2":
+                case "NOx":
+                    return "https://www.atsdr.cdc.gov/es/toxfaqs/es_tfacts175.html#bookmark1";
+                default:
+                    return 'https://es.wikipedia.org/wiki/' + particula;
+            }
+        }
+    }, {
+        key: 'render',
         value: function render() {
             var _this2 = this;
 
+            var colors = ['#0B6739', '#249753', '#69BC67', '#A7D770', '#D9EE90', '#FFFEC2', '#FDDF90', '#FBAD68', '#F26D4A', '#D5322F', '#A3062A'];
+            var infoIcon = _react2.default.createElement(
+                'svg',
+                { xmlns: 'http://www.w3.org/2000/svg', viewBox: '0 0 24 24', enableBackground: 'new 0 0 24 24' },
+                _react2.default.createElement('path', { d: 'M12,2C6.477,2,2,6.477,2,12c0,5.523,4.477,10,10,10c5.523,0,10-4.477,10-10C22,6.477,17.523,2,12,2z M13,17h-2v-6h2V17z M13,9h-2V7h2V9z' })
+            );
             var content = this.props.zone.id === 0 ? _react2.default.createElement(
-                "p",
-                { className: "disclaimer" },
-                "Por favor selecciona una zona para ver m\xE1s informaci\xF3n"
+                'div',
+                { id: 'disclaimer' },
+                _react2.default.createElement(
+                    'p',
+                    null,
+                    'Por favor selecciona una zona para ver m\xE1s informaci\xF3n'
+                )
             ) : _react2.default.createElement(
-                "div",
-                { className: "text", style: { backgroundColor: this.props.zone.color } },
+                'div',
+                { className: 'text' },
                 _react2.default.createElement(
-                    "p",
-                    null,
-                    "Datos de la estaci\xF3n num.",
-                    this.props.zone.id,
-                    " (",
-                    this.props.zone.name,
-                    ")"
+                    'p',
+                    { className: 'panel__location' },
+                    'Estaci\xF3n: ',
+                    this.props.zone.name
                 ),
                 _react2.default.createElement(
-                    "p",
-                    null,
-                    "Calidad del aire: ",
-                    this.props.zone.ica,
-                    "/100"
+                    'div',
+                    { className: 'subcard', style: { backgroundColor: colors[Math.round(this.props.zone.traffic / 10)] } },
+                    'Intensidad del tr\xE1fico (%)',
+                    _react2.default.createElement(
+                        'p',
+                        { className: 'subcard__number' },
+                        this.props.zone.traffic
+                    )
                 ),
                 _react2.default.createElement(
-                    "p",
-                    null,
-                    "Principal contaminante: ",
-                    this.props.zone.part
+                    'div',
+                    { className: 'subcard', style: { backgroundColor: this.props.zone.color } },
+                    'Indice de Calidad del Aire',
+                    _react2.default.createElement(
+                        'p',
+                        { className: 'subcard__number' },
+                        this.props.zone.ica
+                    )
                 ),
-                _react2.default.createElement("br", null),
                 _react2.default.createElement(
-                    "p",
-                    { onClick: function onClick() {
-                            return _this2.props.setStore({ showGraph: true });
-                        } },
-                    "Ver m\xE1s informaci\xF3n"
+                    'div',
+                    { id: 'part_small' },
+                    _react2.default.createElement(
+                        'a',
+                        { href: this.getLink(this.props.zone.part) },
+                        '\u2197 Principal contaminante: ',
+                        this.props.zone.part
+                    )
+                ),
+                _react2.default.createElement('br', null),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'info' },
+                    _react2.default.createElement(
+                        'div',
+                        { onClick: function onClick() {
+                                return _this2.props.setStore({ showGraph: true });
+                            } },
+                        _react2.default.createElement(
+                            'p',
+                            null,
+                            'Ver m\xE1s informaci\xF3n'
+                        )
+                    )
                 )
             );
             return _react2.default.createElement(
-                "div",
-                { className: "card card__panel" },
+                'div',
+                { className: 'card card__panel' },
                 content
             );
         }
@@ -923,7 +978,8 @@ var Map = function (_React$Component) {
                                 // not headers array, only row obj {}
                                 var _status$obj$id = status[obj.id],
                                     ica = _status$obj$id.ica,
-                                    part = _status$obj$id.part;
+                                    part = _status$obj$id.part,
+                                    traffic = _status$obj$id.traffic;
 
                                 // turf.point
 
@@ -932,6 +988,7 @@ var Map = function (_React$Component) {
                                     ica: ica,
                                     id: obj.id,
                                     name: obj.name,
+                                    traffic: traffic,
                                     part: part
                                 });
                                 features.push(feature);
