@@ -95,7 +95,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, client) {
         let {id} = req.params;
         let {time} = req.query;
 
-        console.log(`Request on '/rest/api/station/${id}. Time: ${time}`);
+        console.log(`Request on '/rest/api/station/${id}' on ${new Date()}. Time: ${time}`);
         if(id){
             db.collection(id).find().toArray((err, results) => {
                 let data = [];
@@ -133,7 +133,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, client) {
             date = getDate(d.getHours()-2);
         else date = getDate(d.getHours()-1);
 
-        console.log(`Request on '/rest/api/status/'. Data from ${date}`);
+        console.log(`Request on '/rest/api/status/' on ${new Date()}. Data from ${date}`);
         let keys = ["4", "8", "11", "16", "17", "18", "24", "27", "35", "36", "38", "39", "40", "47", "48", "49", "50","54", "55", "56", "57", "58", "59","60"];
         let data = {}
 
@@ -149,7 +149,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, function(err, client) {
                         part: r.ica_p,
                         traffic: r['Traffic density (%)']
                     };
-                    console.log(k, r.date_t, data[k].ica);
+                    // console.log(k, r.date_t, data[k].ica);
 
                     if(Object.keys(data).length==keys.length) {
                         res.json(data);
