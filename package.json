@@ -4,7 +4,7 @@
   "description": "air monitoring scrapper from MAD data",
   "main": "air.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "author": "dfr",
   "license": "MIT",
@@ -20,10 +20,12 @@
     "xml2js": "^0.4.19"
   },
   "devDependencies": {
+    "eslint-config-airbnb-base": "^13.1.0",
     "eslint-config-standard": "^11.0.0",
-    "eslint-plugin-import": "^2.12.0",
+    "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-node": "^6.0.1",
     "eslint-plugin-promise": "^3.8.0",
-    "eslint-plugin-standard": "^3.1.0"
+    "eslint-plugin-standard": "^3.1.0",
+    "jest": "^23.6.0"
   }
 }

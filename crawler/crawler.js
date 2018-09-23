@@ -1,15 +1,14 @@
-const partjs = require("./particles.js");
-const particles = partjs.p;
-
-const metjs = require("./meteo.js");
-const meteo = metjs.m;
-
-const trafjs = require("./traffic.js");
-const traffic = trafjs.t;
-
 const MongoClient = require("mongodb").MongoClient;
 const assert = require("assert");
 const cron = require("node-cron");
+
+const partjs = require("./particles.js");
+const metjs = require("./meteo.js");
+const trafjs = require("./traffic.js");
+
+const particles = partjs.p;
+const meteo = metjs.m;
+const traffic = trafjs.t;
 
 const domain = process.env.aws;
 if(!domain) {
