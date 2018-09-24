@@ -173,8 +173,8 @@ MongoClient.connect(url, { useNewUrlParser: true }, (error, client) => {
 
                     try {
                         console.log(k, results[0].date_t, data[k].ica);
-                    } catch (error) {
-                        console.log(error)
+                    } catch (exception) {
+                        console.log(exception);
                     }
 
                     if (Object.keys(data).length === keys.length) {
