@@ -112,7 +112,7 @@ class Map extends React.Component {
             },
         }).then(response => response.json()
         ).then(response => {
-            // console.log("response", response);
+            console.log("response", response);
             callback(response);
         }).catch((e) => {
             console.log(`Error in fetch ${e.message}`);

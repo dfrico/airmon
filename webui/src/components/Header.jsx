@@ -16,24 +16,24 @@ class Header extends React.Component {
                     xmlnsXlink="http://www.w3.org/1999/xlink"
                 >
                     <g
-                    id="Logo-svg"
-                    stroke="none"
-                    strokeWidth="1"
-                    fill="none"
-                    fillRule="evenodd"
-                    fillOpacity="0.465692935"
-                    fontFamily="Lobster-Regular, Lobster"
-                    fontSize="38"
-                    fontWeight="normal">
+                        id="Logo-svg"
+                        stroke="none"
+                        strokeWidth="1"
+                        fill="none"
+                        fillRule="evenodd"
+                        fillOpacity="0.465692935"
+                        fontFamily="Lobster-Regular, Lobster"
+                        fontSize="38"
+                        fontWeight="normal">
                         <g
-                        id="Logo"
-                        //transform="translate(-7.000000, -10.000000)"
-                        fill="#23A480">
+                            id="Logo"
+                            //transform="translate(-7.000000, -10.000000)"
+                            fill="#23A480">
                             <text
-                            id="airmad">
+                                id="airmad">
                                 <tspan
-                                x="0"
-                                y="100"
+                                    x="0"
+                                    y="100"
                                 >
                                 airmad
                                 </tspan>
@@ -45,10 +45,10 @@ class Header extends React.Component {
         }
 
         return (
-        <div className='header'>
-            <SvgLogo width="400px" height="150px"/>
-        </div>
-    );
+            <div className='header'>
+                <SvgLogo width="400px" height="150px"/>
+            </div>
+        );
     }
     
 }

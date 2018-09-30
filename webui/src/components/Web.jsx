@@ -52,7 +52,7 @@ class Web extends React.Component {
                 <Header></Header>
                 <div className="card__container">
                     <Map theme={this.state.theme} setStore={this.setStore.bind(this)}></Map>
-                    <Panel zone={this.state.station} setStore={this.setStore.bind(this)}></Panel>
+                    <Panel zone={this.state.station} setStore={this.setStore.bind(this)} showingGraph={this.state.showGraph}></Panel>
                     {this.state.showGraph ? <Graph zone={this.state.station}></Graph> : ""}
                 </div>
                 <label className="switch">

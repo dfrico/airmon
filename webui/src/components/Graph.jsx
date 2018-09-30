@@ -76,12 +76,12 @@ class Graph extends React.Component {
             },
         })
         // .then(response => console.log(response))
-        .then(response => response.json()
-        ).then(response => {
-            callback(response.data);
-        }).catch((e) => {
-            console.log(`Error in fetch ${e.message}`);
-        });
+            .then(response => response.json()
+            ).then(response => {
+                callback(response.data);
+            }).catch((e) => {
+                console.log(`Error in fetch ${e.message}`);
+            });
     }
 
     componentDidUpdate() {
