@@ -20,9 +20,9 @@ function getDate(hour) {
     // 2018-08-16T08:00:00
     const d = new Date();
     if (hour < 0) {
-        return `${d.getUTCFullYear()}-${String(d.getMonth()).length === 1 ? `0${d.getMonth() + 1}` : d.getMonth() + 1}-${String(d.getDate() - 1).length === 1 ? `0${d.getDate() - 1}` : d.getDate() - 1}T${24 + hour}:00:00`;
+        return `${d.getUTCFullYear()}-${String(d.getMonth() + 1).length === 1 ? `0${d.getMonth() + 1}` : d.getMonth() + 1}-${String(d.getDate() - 1).length === 1 ? `0${d.getDate() - 1}` : d.getDate() - 1}T${24 + hour}:00:00`;
     }
-    return `${d.getUTCFullYear()}-${String(d.getMonth()).length === 1 ? `0${d.getMonth() + 1}` : d.getMonth() + 1}-${String(d.getDate()).length === 1 ? `0${d.getDate()}` : d.getDate()}T${String(hour).length === 1 ? `0${hour}` : hour}:00:00`;
+    return `${d.getUTCFullYear()}-${String(d.getMonth() + 1).length === 1 ? `0${d.getMonth() + 1}` : d.getMonth() + 1}-${String(d.getDate()).length === 1 ? `0${d.getDate()}` : d.getDate()}T${String(hour).length === 1 ? `0${hour}` : hour}:00:00`;
 }
 
 function getWeather(callback) {
@@ -159,17 +159,18 @@ MongoClient.connect(url, { useNewUrlParser: true }, (error, client) => {
                     }
                 });
             } else {
-                db.collection(k).find({ date_t: { $eq: date } }).toArray((err, results) => {
+                db.collection(k).find({ date_t: { $eq: date } }).toArray((err, result) => {
                     if (err) console.error(err);
                     // console.log(date, results);
-                    results.map((r) => {
-                        data[k] = {
-                            ica: r.ICA,
-                            part: r.ica_p,
-                            traffic: r['Traffic density (%)'],
-                        };
-                        return r;
-                    });
+                    const results = result.filter(r => r.ICA !== undefined);
+                    const r = results[results.length - 1];
+                    console.log(Object.keys(r));
+
+                    data[k] = {
+                        ica: r.ICA,
+                        part: r.ica_p,
+                        traffic: r['Traffic density (%)'],
+                    };
 
                     try {
                         console.log(k, results[0].date_t, data[k].ica);
