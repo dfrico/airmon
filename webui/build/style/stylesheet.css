@@ -82,7 +82,7 @@ body {
     display: inline-grid;
     display: -ms-inline-grid;
     grid-template-columns: 6vw 41vw 6vw 41vw 6vw;
-    grid-template-rows: 40vh 5vh 40vh;
+    grid-template-rows: 38vh 5vh 38vh 5vh;
   }
 
   .card__map {
@@ -148,6 +148,10 @@ body {
   margin: 0 36px;
 }
 
+.card__panel #disclaimer p br{
+  margin: 10px 0px;
+}
+
 .card__panel .panel__scroll {
   height: 88%;
   overflow-y: scroll;
@@ -187,6 +191,27 @@ body {
   right: 2px;
   top: 2px;
   fill: white;
+}
+
+
+.card__panel .subcard .tooltiptext {
+  visibility: hidden;
+  /* width: 120px; */
+  background-color: rgba(0,0,0,0.5);
+  color: #fff;
+  font-size: 16px;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  bottom: 10px;
+  left: 10%;
+  max-width: 80%;
+  z-index: 1;
+}
+
+.card__panel .subcard:hover .tooltiptext {
+  visibility: visible;
 }
 /*
 .card__panel .subcard .infotext {

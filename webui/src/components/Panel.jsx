@@ -61,11 +61,13 @@ class Panel extends React.Component {
                 <Card
                     color={colors[Math.round(this.props.zone.traffic/10)]}
                     title={"Intensidad del tráfico (%)"}
+                    text={"Porcentaje de intensidad de tráfico en dicha zona con respecto a su intensidad de saturación"}
                     number={this.props.zone.traffic}
                 ></Card>
                 <Card
                     color={this.props.zone.color}
                     title={"Indice de Calidad del Aire"}
+                    text={"El Indice de Calidad del Aire o ICA mide la cantidad de partículas contaminantes. Se mide de 0 a 100 (y más), siendo 0 el mejor valor"}
                     number={this.props.zone.ica}
                 ></Card>
                 <div id="part_small"><a href={this.getLink(this.props.zone.part)}>↗ Principal contaminante: {this.props.zone.part}</a></div>

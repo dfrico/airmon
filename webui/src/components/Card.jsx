@@ -15,6 +15,7 @@ class Card extends React.Component {
         */
         return (
             <div className="subcard" style={{backgroundColor:this.props.color}}>
+                {this.props.text ? <span className="tooltiptext">{this.props.text}</span> : ""}
                 {/* {infoIcon} */}
                 <p className="subcard__name">{this.props.title}</p>
                 <p className="subcard__number">{this.props.number}</p>
