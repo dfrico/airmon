@@ -36,9 +36,9 @@ class Graph extends React.Component {
         // Get the data. time = "24h" o "7d"
         this.getData(this.props.zone, {time: "24h"}, (data) => {
 
-        //d3.csv("data/fakedates.csv").then(data => {
             // format the data
-            data.map((d) => {
+            data.map((d, i) => {
+                if(i==14) console.log(data.length, d);
                 d.date = parseTime(d.date_t);
             });
             data = data.filter(d=>d.ICA);
@@ -62,6 +62,49 @@ class Graph extends React.Component {
             // Add the Y Axis
             svg.append("g")
                 .call(d3.axisLeft(y));
+        });
+    }
+
+    drawMultiGraph(){
+        let lineOpacity = "0.25";
+        let lineOpacityHover = "0.85";
+        let otherLinesOpacityHover = "0.1";
+        let lineStroke = "1.5px";
+        let lineStrokeHover = "2.5px";
+
+        let circleOpacity = '0.85';
+        let circleOpacityOnLineHover = "0.25";
+        let circleRadius = 3;
+        let circleRadiusHover = 6;
+
+        this.getData(this.props.zone, {time: "24h"}, (d) => {
+            let data = [{
+                name: "ICA",
+                values: [
+                    // {date: "", value: ""}
+                ]
+            },{
+                name: "Trafico", values: []
+            },{
+                name: "Humedad", values: []
+            },{
+                name: "Temperatura", values: []
+            }/*,{
+                name: "Precipitacion", values: []
+            },{
+                name: "Presión", values: []
+            },{
+                name: "Viento", values: []
+            }*/];
+
+            let parseDate = d3.timeParse("%Y-%m-%dT%H:00:00");
+            data.forEach(function(d) {
+                d.values.forEach(function(d) {
+                    d.date = parseDate(d.date);
+                    d.price = +d.price;
+                });
+            });
+
         });
     }
 
