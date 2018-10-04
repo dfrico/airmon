@@ -148,7 +148,7 @@ var app =
 /******/
 /******/
 /******/ 	// add entry module to deferred list
-/******/ 	deferredModules.push([20,0,1]);
+/******/ 	deferredModules.push([21,0,1]);
 /******/ 	// run deferred modules when ready
 /******/ 	return checkDeferredModules();
 /******/ })
@@ -646,6 +646,86 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /* eslint-disable no-undef,no-inner-declarations */
 
 
+var Card = function (_React$Component) {
+    _inherits(Card, _React$Component);
+
+    function Card() {
+        _classCallCheck(this, Card);
+
+        return _possibleConstructorReturn(this, (Card.__proto__ || Object.getPrototypeOf(Card)).apply(this, arguments));
+    }
+
+    _createClass(Card, [{
+        key: "render",
+        value: function render() {
+            var infoIcon = _react2.default.createElement(
+                "svg",
+                { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", enableBackground: "new 0 0 24 24" },
+                _react2.default.createElement("path", { d: "M12,2C6.477,2,2,6.477,2,12c0,5.523,4.477,10,10,10c5.523,0,10-4.477,10-10C22,6.477,17.523,2,12,2z M13,17h-2v-6h2V17z M13,9h-2V7h2V9z" })
+            );
+            /*
+            Props:
+                color
+                title ?
+                number
+            */
+            return _react2.default.createElement(
+                "div",
+                { className: "subcard", style: { backgroundColor: this.props.color } },
+                this.props.text ? _react2.default.createElement(
+                    "span",
+                    { className: "tooltiptext" },
+                    this.props.text
+                ) : "",
+                _react2.default.createElement(
+                    "p",
+                    { className: "subcard__name" },
+                    this.props.title
+                ),
+                _react2.default.createElement(
+                    "p",
+                    { className: "subcard__number" },
+                    this.props.number
+                )
+            );
+        }
+    }]);
+
+    return Card;
+}(_react2.default.Component);
+
+exports.default = Card;
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _Card = __webpack_require__(13);
+
+var _Card2 = _interopRequireDefault(_Card);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /* eslint-disable no-undef,no-inner-declarations */
+
+
 var Panel = function (_React$Component) {
     _inherits(Panel, _React$Component);
 
@@ -683,19 +763,16 @@ var Panel = function (_React$Component) {
         value: function render() {
             var _this2 = this;
 
-            var colors = ['#0B6739', '#249753', '#69BC67', '#A7D770', '#D9EE90', '#FFFEC2', '#FDDF90', '#FBAD68', '#F26D4A', '#D5322F', '#A3062A'];
-            var infoIcon = _react2.default.createElement(
-                'svg',
-                { xmlns: 'http://www.w3.org/2000/svg', viewBox: '0 0 24 24', enableBackground: 'new 0 0 24 24' },
-                _react2.default.createElement('path', { d: 'M12,2C6.477,2,2,6.477,2,12c0,5.523,4.477,10,10,10c5.523,0,10-4.477,10-10C22,6.477,17.523,2,12,2z M13,17h-2v-6h2V17z M13,9h-2V7h2V9z' })
-            );
+            var colors = [// vegajs redyellowgreen
+            '#0B6739', '#249753', '#69BC67', '#A7D770', '#D9EE90', '#FFFEC2', '#FDDF90', '#FBAD68', '#F26D4A', '#D5322F', '#A3062A'];
+            var colors2 = ['#323993', '#4776B2', '#76AECF', '#ACD9E8', '#E0F3F8', '#FFFEC2', '#FDDF90', '#FBAD68', '#F26D4A', '#D5322F', '#A3062A'];
             var content = this.props.zone.id === 0 ? _react2.default.createElement(
                 'div',
                 { id: 'disclaimer' },
                 _react2.default.createElement(
                     'p',
                     null,
-                    'Por favor selecciona una zona para ver m\xE1s informaci\xF3n'
+                    'Por favor, selecciona una zona para ver m\xE1s datos.'
                 )
             ) : _react2.default.createElement(
                 'div',
@@ -706,26 +783,18 @@ var Panel = function (_React$Component) {
                     'Estaci\xF3n: ',
                     this.props.zone.name
                 ),
-                _react2.default.createElement(
-                    'div',
-                    { className: 'subcard', style: { backgroundColor: colors[Math.round(this.props.zone.traffic / 10)] } },
-                    'Intensidad del tr\xE1fico (%)',
-                    _react2.default.createElement(
-                        'p',
-                        { className: 'subcard__number' },
-                        this.props.zone.traffic
-                    )
-                ),
-                _react2.default.createElement(
-                    'div',
-                    { className: 'subcard', style: { backgroundColor: this.props.zone.color } },
-                    'Indice de Calidad del Aire',
-                    _react2.default.createElement(
-                        'p',
-                        { className: 'subcard__number' },
-                        this.props.zone.ica
-                    )
-                ),
+                _react2.default.createElement(_Card2.default, {
+                    color: colors[Math.round(this.props.zone.traffic / 10)],
+                    title: "Intensidad del tráfico (%)",
+                    text: "Porcentaje de intensidad de tráfico en dicha zona con respecto a su intensidad de saturación",
+                    number: this.props.zone.traffic
+                }),
+                _react2.default.createElement(_Card2.default, {
+                    color: this.props.zone.color,
+                    title: "Indice de Calidad del Aire",
+                    text: "El Indice de Calidad del Aire o ICA mide la cantidad de partículas contaminantes. Se mide de 0 a 100 (y más), siendo 0 el mejor valor",
+                    number: this.props.zone.ica
+                }),
                 _react2.default.createElement(
                     'div',
                     { id: 'part_small' },
@@ -736,6 +805,16 @@ var Panel = function (_React$Component) {
                         this.props.zone.part
                     )
                 ),
+                this.props.zone.humedad ? _react2.default.createElement(_Card2.default, {
+                    color: colors[Math.round(this.props.zone.humedad / 10)],
+                    title: "Humedad (%)",
+                    number: this.props.zone.humedad
+                }) : "",
+                this.props.zone.temp ? _react2.default.createElement(_Card2.default, {
+                    color: colors[Math.round(this.props.zone.temp / 6)],
+                    title: "Temperatura (ºC)",
+                    number: this.props.zone.temp
+                }) : "",
                 _react2.default.createElement('br', null),
                 _react2.default.createElement(
                     'div',
@@ -755,8 +834,12 @@ var Panel = function (_React$Component) {
             );
             return _react2.default.createElement(
                 'div',
-                { className: 'card card__panel' },
-                content
+                { className: 'card card__panel', style: this.props.showingGraph ? { gridRow: "1 / 2" } : { gridRow: "1 / 4" } },
+                _react2.default.createElement(
+                    'div',
+                    { className: 'panel__scroll', style: this.props.showingGraph ? { overflowY: "scroll" } : { overflowY: "hidden" } },
+                    content
+                )
             );
         }
     }]);
@@ -767,7 +850,7 @@ var Panel = function (_React$Component) {
 exports.default = Panel;
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -835,9 +918,9 @@ var Graph = function (_React$Component) {
             // Get the data. time = "24h" o "7d"
             this.getData(this.props.zone, { time: "24h" }, function (data) {
 
-                //d3.csv("data/fakedates.csv").then(data => {
                 // format the data
-                data.map(function (d) {
+                data.map(function (d, i) {
+                    if (i == 14) console.log(data.length, d);
                     d.date = parseTime(d.date_t);
                 });
                 data = data.filter(function (d) {
@@ -859,6 +942,136 @@ var Graph = function (_React$Component) {
 
                 // Add the Y Axis
                 svg.append("g").call(d3.axisLeft(y));
+            });
+        }
+    }, {
+        key: "drawMultiGraph",
+        value: function drawMultiGraph() {
+            // let margin = {top: 20, right: 20, bottom: 20, left: 30},
+            var margin = 30,
+
+            // width = 960 - margin.left - margin.right,
+            width = d3.select(".card").node().clientWidth - 40,
+
+            // height = 500 - margin.top - margin.bottom;
+            height = d3.select(".card__graph").node().clientHeight - 40,
+                duration = 250;
+
+            var lineOpacity = "0.25";
+            var lineOpacityHover = "0.85";
+            var otherLinesOpacityHover = "0.1";
+            var lineStroke = "1.5px";
+            var lineStrokeHover = "2.5px";
+
+            var circleOpacity = '0.85';
+            var circleOpacityOnLineHover = "0.25";
+            var circleRadius = 3;
+            var circleRadiusHover = 6;
+
+            this.getData(this.props.zone, { time: "24h" }, function (payload) {
+                var data = [{
+                    name: "ICA",
+                    values: [
+                        // {date: "", value: ""}
+                    ]
+                }, {
+                    name: "Trafico", values: []
+                }, {
+                    name: "Humedad", values: []
+                }, {
+                    name: "Temperatura", values: []
+                    /*,{ name: "Precipitacion", values: [] },{ name: "Presión", values: [] },{ name: "Viento", values: [] }*/
+                }];
+
+                var parseDate = d3.timeParse("%Y-%m-%dT%H:00:00");
+                payload.forEach(function (d) {
+                    data.filter(function (a) {
+                        return a.name === "ICA";
+                    })[0].values.push({ date: parseDate(d.date_p), value: d['ICA'] });
+                    data.filter(function (a) {
+                        return a.name === "Trafico";
+                    })[0].values.push({ date: parseDate(d.date_t), value: d['Traffic density (%)'] });
+                    data.filter(function (a) {
+                        return a.name === "Humedad";
+                    })[0].values.push({ date: parseDate(d.date_m), value: d['humedad (%)'] });
+                    data.filter(function (a) {
+                        return a.name === "Temperatura";
+                    })[0].values.push({ date: parseDate(d.date_m), value: d['temp (°C)'] });
+                });
+
+                /* Scale */
+                var xScale = d3.scaleTime().domain(d3.extent(data[0].values, function (d) {
+                    return d.date;
+                })).range([0, width - margin]);
+
+                var yScale = d3.scaleLinear().domain([0, 100
+                // d3.max(data[0].values, d => d.value)
+                ]).range([height - margin, 0]);
+
+                var color = d3.scaleOrdinal(d3.schemeCategory10);
+
+                /* Add SVG */
+                var svg = d3.select("#graph").append("svg").attr("width", width + margin + "px").attr("height", height + margin + "px").append('g').attr("transform", "translate(" + margin + ", " + margin + ")");
+
+                /* Add line into SVG */
+                var line = d3.line().x(function (d) {
+                    return xScale(d.date);
+                }).y(function (d) {
+                    return yScale(d.value);
+                });
+
+                var lines = svg.append('g').attr('class', 'lines');
+
+                lines.selectAll('.line-group').data(data).enter().append('g').attr('class', 'line-group').on("mouseover", function (d, i) {
+                    svg.append("text").attr("class", "title-text").style("fill", color(i)).text(d.name).attr("text-anchor", "middle").attr("x", (width - margin) / 2).attr("y", 5);
+                }).on("mouseout", function (d) {
+                    svg.select(".title-text").remove();
+                }).append('path').attr('class', 'line').attr('d', function (d) {
+                    return line(d.values);
+                }).style('stroke', function (d, i) {
+                    return color(i);
+                }).style('opacity', lineOpacity).on("mouseover", function (d) {
+                    d3.selectAll('.line').style('opacity', otherLinesOpacityHover);
+                    d3.selectAll('.circle').style('opacity', circleOpacityOnLineHover);
+                    d3.select(this).style('opacity', lineOpacityHover).style("stroke-width", lineStrokeHover).style("cursor", "pointer");
+                }).on("mouseout", function (d) {
+                    d3.selectAll(".line").style('opacity', lineOpacity);
+                    d3.selectAll('.circle').style('opacity', circleOpacity);
+                    d3.select(this).style("stroke-width", lineStroke).style("cursor", "none");
+                });
+
+                /* Add circles in the line */
+                lines.selectAll("circle-group").data(data).enter().append("g").style("fill", function (d, i) {
+                    return color(i);
+                }).selectAll("circle").data(function (d) {
+                    return d.values;
+                }).enter().append("g").attr("class", "circle").on("mouseover", function (d) {
+                    d3.select(this).style("cursor", "pointer").append("text").attr("class", "text").text("" + d.value).attr("x", function (d) {
+                        return xScale(d.date) + 5;
+                    }).attr("y", function (d) {
+                        return yScale(d.value) - 10;
+                    });
+                }).on("mouseout", function (d) {
+                    d3.select(this).style("cursor", "none").transition().duration(duration).selectAll(".text").remove();
+                }).append("circle").attr("cx", function (d) {
+                    return xScale(d.date);
+                }).attr("cy", function (d) {
+                    return yScale(d.value);
+                }).attr("r", circleRadius).style('opacity', circleOpacity).on("mouseover", function (d) {
+                    d3.select(this).transition().duration(duration).attr("r", circleRadiusHover);
+                }).on("mouseout", function (d) {
+                    d3.select(this).transition().duration(duration).attr("r", circleRadius);
+                });
+
+                /* Add Axis into SVG */
+                var xAxis = d3.axisBottom(xScale).ticks(5);
+                var yAxis = d3.axisLeft(yScale).ticks(5);
+
+                svg.append("g").attr("class", "x axis").attr("transform", "translate(0, " + (height - margin) + ")").call(xAxis);
+
+                svg.append("g").attr("class", "y axis")
+                // .call(d3.axisLeft(y))
+                .call(yAxis).append('text').attr("y", 15).attr("transform", "translate(20 0)").attr("fill", "#000").text("%");
             });
         }
     }, {
@@ -887,19 +1100,29 @@ var Graph = function (_React$Component) {
             });
         }
     }, {
+        key: "close",
+        value: function close() {
+            d3.select("#graph>svg").remove();
+            this.props.setStore({ showGraph: false });
+        }
+    }, {
         key: "componentDidUpdate",
         value: function componentDidUpdate() {
             d3.select("#graph>svg").remove();
-            this.drawGraph();
+            // this.drawGraph();
+            this.drawMultiGraph();
         }
     }, {
         key: "componentDidMount",
         value: function componentDidMount() {
-            this.drawGraph();
+            // this.drawGraph();
+            this.drawMultiGraph();
         }
     }, {
         key: "render",
         value: function render() {
+            var _this2 = this;
+
             var content = this.props.zone.id === 0 ? _react2.default.createElement(
                 "p",
                 { className: "disclaimer" },
@@ -908,7 +1131,24 @@ var Graph = function (_React$Component) {
             return _react2.default.createElement(
                 "div",
                 { className: "card card__graph" },
-                content
+                content,
+                _react2.default.createElement(
+                    "svg",
+                    { version: "1.1", xmlns: "http://www.w3.org/2000/svg", x: "0px", y: "0px", viewBox: "0 0 60 60", id: "close", onClick: function onClick() {
+                            return _this2.close();
+                        } },
+                    _react2.default.createElement(
+                        "g",
+                        { id: "X" },
+                        _react2.default.createElement("line", { id: "_x5C_", fill: "none", stroke: "black", strokeWidth: "10", transform: "translate(5, 5)", strokeMiterlimit: "10", x1: "5", y1: "5", x2: "50", y2: "50", strokeLinecap: "round" }),
+                        _react2.default.createElement("line", { id: "_x2F_", fill: "none", stroke: "black", strokeWidth: "10", transform: "translate(5, 5)", strokeMiterlimit: "10", x1: "5", y1: "50", x2: "50", y2: "5", strokeLinecap: "round" })
+                    ),
+                    _react2.default.createElement(
+                        "g",
+                        { id: "circle" },
+                        _react2.default.createElement("circle", { id: "XMLID_16_", opacity: "0", fill: "none", strokeWidth: "3", stroke: "black", strokeMiterlimit: "10", cx: "30", cy: "30", r: "40" })
+                    )
+                )
             );
         }
     }]);
@@ -919,7 +1159,7 @@ var Graph = function (_React$Component) {
 exports.default = Graph;
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -979,7 +1219,9 @@ var Map = function (_React$Component) {
                                 var _status$obj$id = status[obj.id],
                                     ica = _status$obj$id.ica,
                                     part = _status$obj$id.part,
-                                    traffic = _status$obj$id.traffic;
+                                    traffic = _status$obj$id.traffic,
+                                    temp = _status$obj$id.temp,
+                                    humedad = _status$obj$id.humedad;
 
                                 // turf.point
 
@@ -989,7 +1231,9 @@ var Map = function (_React$Component) {
                                     id: obj.id,
                                     name: obj.name,
                                     traffic: traffic,
-                                    part: part
+                                    part: part,
+                                    temp: temp,
+                                    humedad: humedad
                                 });
                                 features.push(feature);
                             }
@@ -1113,7 +1357,7 @@ var Map = function (_React$Component) {
 exports.default = Map;
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1212,7 +1456,7 @@ var Header = function (_React$Component) {
 exports.default = Header;
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1228,19 +1472,19 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _Header = __webpack_require__(16);
+var _Header = __webpack_require__(17);
 
 var _Header2 = _interopRequireDefault(_Header);
 
-var _Map = __webpack_require__(15);
+var _Map = __webpack_require__(16);
 
 var _Map2 = _interopRequireDefault(_Map);
 
-var _Graph = __webpack_require__(14);
+var _Graph = __webpack_require__(15);
 
 var _Graph2 = _interopRequireDefault(_Graph);
 
-var _Panel = __webpack_require__(13);
+var _Panel = __webpack_require__(14);
 
 var _Panel2 = _interopRequireDefault(_Panel);
 
@@ -1312,14 +1556,8 @@ var Web = function (_React$Component) {
                     'div',
                     { className: 'card__container' },
                     _react2.default.createElement(_Map2.default, { theme: this.state.theme, setStore: this.setStore.bind(this) }),
-                    _react2.default.createElement(_Panel2.default, { zone: this.state.station, setStore: this.setStore.bind(this) }),
-                    this.state.showGraph ? _react2.default.createElement(_Graph2.default, { zone: this.state.station }) : ""
-                ),
-                _react2.default.createElement(
-                    'label',
-                    { className: 'switch' },
-                    _react2.default.createElement('input', { type: 'checkbox', onChange: this.changeTheme.bind(this) }),
-                    _react2.default.createElement('span', { className: 'slider round' })
+                    _react2.default.createElement(_Panel2.default, { zone: this.state.station, setStore: this.setStore.bind(this), showingGraph: this.state.showGraph }),
+                    this.state.showGraph ? _react2.default.createElement(_Graph2.default, { zone: this.state.station, setStore: this.setStore.bind(this) }) : ""
                 )
             );
         }
@@ -1331,9 +1569,9 @@ var Web = function (_React$Component) {
 exports.default = Web;
 
 /***/ }),
-/* 18 */,
 /* 19 */,
-/* 20 */
+/* 20 */,
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1347,7 +1585,7 @@ var _reactDom = __webpack_require__(12);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
-var _Web = __webpack_require__(17);
+var _Web = __webpack_require__(18);
 
 var _Web2 = _interopRequireDefault(_Web);
 
