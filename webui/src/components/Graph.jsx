@@ -77,7 +77,8 @@ class Graph extends React.Component {
         let circleRadius = 3;
         let circleRadiusHover = 6;
 
-        this.getData(this.props.zone, {time: "24h"}, (d) => {
+        this.getData(this.props.zone, {time: "24h"}, (payload) => {
+            console.log(payload);
             let data = [{
                 name: "ICA",
                 values: [
@@ -89,22 +90,147 @@ class Graph extends React.Component {
                 name: "Humedad", values: []
             },{
                 name: "Temperatura", values: []
-            }/*,{
-                name: "Precipitacion", values: []
-            },{
-                name: "Presión", values: []
-            },{
-                name: "Viento", values: []
-            }*/];
+            }
+            /*,{ name: "Precipitacion", values: [] },{ name: "Presión", values: [] },{ name: "Viento", values: [] }*/
+            ];
 
             let parseDate = d3.timeParse("%Y-%m-%dT%H:00:00");
-            data.forEach(function(d) {
-                d.values.forEach(function(d) {
-                    d.date = parseDate(d.date);
-                    d.price = +d.price;
-                });
+            payload.forEach(d => {
+                data.filter(a => a.name==="ICA")[0].values.push({date: parseDate(d.date_p), value: d['ica']});
+                data.filter(a => a.name==="Trafico")[0].values.push({date: parseDate(d.date_t), value: d['trafico']});
+                data.filter(a => a.name==="Humedad")[0].values.push({date: parseDate(d.date_m), value: d['humedad']});
+                data.filter(a => a.name==="Temperatura")[0].values.push({date: parseDate(d.date_m), value: d['temp']});
             });
 
+            /* Scale */
+            let xScale = d3.scaleTime()
+                .domain(d3.extent(data[0].values, d => d.date))
+                .range([0, width-margin]);
+
+            let yScale = d3.scaleLinear()
+                .domain([0, 100
+                    // d3.max(data[0].values, d => d.value)
+                ])
+                .range([height-margin, 0]);
+
+            let color = d3.scaleOrdinal(d3.schemeCategory10);
+
+            /* Add SVG */
+            let svg = d3.select("#chart").append("svg")
+                .attr("width", (width+margin)+"px")
+                .attr("height", (height+margin)+"px")
+                .append('g')
+                .attr("transform", `translate(${margin}, ${margin})`);
+
+            /* Add line into SVG */
+            let line = d3.line()
+                .x(d => xScale(d.date))
+                .y(d => yScale(d.value));
+
+            let lines = svg.append('g')
+                .attr('class', 'lines');
+
+            lines.selectAll('.line-group')
+                .data(data).enter()
+                .append('g')
+                .attr('class', 'line-group')
+                .on("mouseover", function(d, i) {
+                    svg.append("text")
+                        .attr("class", "title-text")
+                        .style("fill", color(i))
+                        .text(d.name)
+                        .attr("text-anchor", "middle")
+                        .attr("x", (width-margin)/2)
+                        .attr("y", 5);
+                })
+                .on("mouseout", function(d) {
+                    svg.select(".title-text").remove();
+                })
+                .append('path')
+                .attr('class', 'line')
+                .attr('d', d => line(d.values))
+                .style('stroke', (d, i) => color(i))
+                .style('opacity', lineOpacity)
+                .on("mouseover", function(d) {
+                    d3.selectAll('.line')
+                        .style('opacity', otherLinesOpacityHover);
+                    d3.selectAll('.circle')
+                        .style('opacity', circleOpacityOnLineHover);
+                    d3.select(this)
+                        .style('opacity', lineOpacityHover)
+                        .style("stroke-width", lineStrokeHover)
+                        .style("cursor", "pointer");
+                })
+                .on("mouseout", function(d) {
+                    d3.selectAll(".line")
+                        .style('opacity', lineOpacity);
+                    d3.selectAll('.circle')
+                        .style('opacity', circleOpacity);
+                    d3.select(this)
+                        .style("stroke-width", lineStroke)
+                        .style("cursor", "none");
+                });
+
+            /* Add circles in the line */
+            lines.selectAll("circle-group")
+                .data(data).enter()
+                .append("g")
+                .style("fill", (d, i) => color(i))
+                .selectAll("circle")
+                .data(d => d.values).enter()
+                .append("g")
+                .attr("class", "circle")
+                .on("mouseover", (d) => {
+                    d3.select(this)
+                        .style("cursor", "pointer")
+                        .append("text")
+                        .attr("class", "text")
+                        .text(`${d.value}`)
+                        .attr("x", d => xScale(d.date) + 5)
+                        .attr("y", d => yScale(d.value) - 10);
+                })
+                .on("mouseout", () => {
+                    d3.select(this)
+                        .style("cursor", "none")
+                        .transition()
+                        .duration(duration)
+                        .selectAll(".text").remove();
+                })
+                .append("circle")
+                .attr("cx", d => xScale(d.date))
+                .attr("cy", d => yScale(d.value))
+                .attr("r", circleRadius)
+                .style('opacity', circleOpacity)
+                .on("mouseover", () => {
+                    d3.select(this)
+                        .transition()
+                        .duration(duration)
+                        .attr("r", circleRadiusHover);
+                })
+                .on("mouseout", () => {
+                    d3.select(this)
+                        .transition()
+                        .duration(duration)
+                        .attr("r", circleRadius);
+                });
+
+            /* Add Axis into SVG */
+            let xAxis = d3.axisBottom(xScale).ticks(5);
+            let yAxis = d3.axisLeft(yScale).ticks(5);
+
+            svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", `translate(0, ${height-margin})`)
+                .call(xAxis);
+
+            svg.append("g")
+                .attr("class", "y axis")
+                .call(d3.axisLeft(y))
+                .append('text')
+                .attr("y", 15)
+                .attr("transform", "translate(20 0)")
+                .attr("fill", "#000")
+                .text("%");
         });
     }
 
@@ -129,11 +255,13 @@ class Graph extends React.Component {
 
     componentDidUpdate() {
         d3.select("#graph>svg").remove();
-        this.drawGraph();
+        // this.drawGraph();
+        this.drawMultiGraph();
     }
 
     componentDidMount() {
-        this.drawGraph();
+        // this.drawGraph();
+        this.drawMultiGraph();
     }
 
     render() {
