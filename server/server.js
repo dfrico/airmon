@@ -147,6 +147,7 @@ MongoClient.connect(url, { useNewUrlParser: true }, (error, client) => {
                     const results = result.filter(r => r.ICA !== undefined);
 
                     const r = results[results.length - 1];
+                    console.log(r);
                     data[k] = {
                         ica: r.ICA,
                         part: r.ica_p,
@@ -159,21 +160,25 @@ MongoClient.connect(url, { useNewUrlParser: true }, (error, client) => {
                     }
                 });
             } else {
-                db.collection(k).find({ date_t: { $eq: date } }).toArray((err, result) => {
+                db.collection(k).find().toArray((err, result) => {
                     if (err) console.error(err);
                     // console.log(date, results);
-                    const results = result.filter(r => r.ICA !== undefined);
-                    const r = results[results.length - 1];
-                    console.log(Object.keys(r));
-
-                    data[k] = {
-                        ica: r.ICA,
-                        part: r.ica_p,
-                        traffic: r['Traffic density (%)'],
-                    };
+                    const results_ICA = result.filter(r => r.ICA !== undefined);
+                    const r_ICA = results_ICA[results_ICA.length - 1];
+                    const results_meteo = result.filter(r => r.date_m !== undefined);
+                    const r_meteo = results_meteo[results_meteo.length - 1];
+                    const r = {...r_ICA, ...r_meteo};
 
                     try {
-                        console.log(k, results[0].date_t, data[k].ica);
+                        console.log(Object.keys(r));
+                        data[k] = {
+                            ica: r.ICA,
+                            part: r.ica_p,
+                            traffic: r['Traffic density (%)'],
+                            humedad: r['humedad (%)'],
+                            temp: r['temp (°C)'],
+                        };
+                        console.log(k, r[0].date_t, data[k].ica);
                     } catch (exception) {
                         console.log(exception);
                     }
