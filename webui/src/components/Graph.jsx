@@ -66,6 +66,15 @@ class Graph extends React.Component {
     }
 
     drawMultiGraph(){
+        // let margin = {top: 20, right: 20, bottom: 20, left: 30},
+        let margin = 30,
+            // width = 960 - margin.left - margin.right,
+            width = d3.select(".card").node().clientWidth-40,
+            // height = 500 - margin.top - margin.bottom;
+            height = d3.select(".card__graph").node().clientHeight-40,
+            duration = 250;
+        console.log(width, height);
+
         let lineOpacity = "0.25";
         let lineOpacityHover = "0.85";
         let otherLinesOpacityHover = "0.1";
@@ -96,10 +105,10 @@ class Graph extends React.Component {
 
             let parseDate = d3.timeParse("%Y-%m-%dT%H:00:00");
             payload.forEach(d => {
-                data.filter(a => a.name==="ICA")[0].values.push({date: parseDate(d.date_p), value: d['ica']});
-                data.filter(a => a.name==="Trafico")[0].values.push({date: parseDate(d.date_t), value: d['trafico']});
-                data.filter(a => a.name==="Humedad")[0].values.push({date: parseDate(d.date_m), value: d['humedad']});
-                data.filter(a => a.name==="Temperatura")[0].values.push({date: parseDate(d.date_m), value: d['temp']});
+                data.filter(a => a.name==="ICA")[0].values.push({date: parseDate(d.date_p), value: d['ICA']});
+                data.filter(a => a.name==="Trafico")[0].values.push({date: parseDate(d.date_t), value: d['Traffic density (%)']});
+                data.filter(a => a.name==="Humedad")[0].values.push({date: parseDate(d.date_m), value: d['humedad (%)']});
+                data.filter(a => a.name==="Temperatura")[0].values.push({date: parseDate(d.date_m), value: d['temp (°C)']});
             });
 
             /* Scale */
@@ -116,7 +125,7 @@ class Graph extends React.Component {
             let color = d3.scaleOrdinal(d3.schemeCategory10);
 
             /* Add SVG */
-            let svg = d3.select("#chart").append("svg")
+            let svg = d3.select("#graph").append("svg")
                 .attr("width", (width+margin)+"px")
                 .attr("height", (height+margin)+"px")
                 .append('g')
@@ -180,7 +189,7 @@ class Graph extends React.Component {
                 .data(d => d.values).enter()
                 .append("g")
                 .attr("class", "circle")
-                .on("mouseover", (d) => {
+                .on("mouseover", function(d) {
                     d3.select(this)
                         .style("cursor", "pointer")
                         .append("text")
@@ -189,7 +198,7 @@ class Graph extends React.Component {
                         .attr("x", d => xScale(d.date) + 5)
                         .attr("y", d => yScale(d.value) - 10);
                 })
-                .on("mouseout", () => {
+                .on("mouseout", function(d) {
                     d3.select(this)
                         .style("cursor", "none")
                         .transition()
@@ -201,13 +210,13 @@ class Graph extends React.Component {
                 .attr("cy", d => yScale(d.value))
                 .attr("r", circleRadius)
                 .style('opacity', circleOpacity)
-                .on("mouseover", () => {
+                .on("mouseover", function(d) {
                     d3.select(this)
                         .transition()
                         .duration(duration)
                         .attr("r", circleRadiusHover);
                 })
-                .on("mouseout", () => {
+                .on("mouseout", function(d) {
                     d3.select(this)
                         .transition()
                         .duration(duration)
@@ -225,7 +234,8 @@ class Graph extends React.Component {
 
             svg.append("g")
                 .attr("class", "y axis")
-                .call(d3.axisLeft(y))
+                // .call(d3.axisLeft(y))
+                .call(yAxis)
                 .append('text')
                 .attr("y", 15)
                 .attr("transform", "translate(20 0)")
