@@ -28,12 +28,24 @@ class Panel extends React.Component {
     }
 
     render() {
-        let colors = [
+        let colors = [ // vegajs redyellowgreen
             '#0B6739',
             '#249753',
             '#69BC67',
             '#A7D770',
             '#D9EE90',
+            '#FFFEC2',
+            '#FDDF90',
+            '#FBAD68',
+            '#F26D4A',
+            '#D5322F',
+            '#A3062A'];
+        let colors2 = [
+            '#323993',
+            '#4776B2',
+            '#76AECF',
+            '#ACD9E8',
+            '#E0F3F8',
             '#FFFEC2',
             '#FDDF90',
             '#FBAD68',
@@ -57,6 +69,16 @@ class Panel extends React.Component {
                     number={this.props.zone.ica}
                 ></Card>
                 <div id="part_small"><a href={this.getLink(this.props.zone.part)}>↗ Principal contaminante: {this.props.zone.part}</a></div>
+                {this.props.zone.humedad ? <Card
+                    color={colors[Math.round(this.props.zone.humedad/10)]}
+                    title={"Humedad (%)"}
+                    number={this.props.zone.humedad}
+                ></Card> : ""}
+                {this.props.zone.temp ? <Card
+                    color={colors[Math.round(this.props.zone.temp/6)]}
+                    title={"Temperatura (ºC)"}
+                    number={this.props.zone.temp}
+                ></Card> : ""}
                 <br></br>
                 <div className="info">
                     <div onClick={() => this.props.setStore({showGraph: true})}>
@@ -65,8 +87,10 @@ class Panel extends React.Component {
                 </div>
             </div>;
         return (
-            <div className="card card__panel">
-                {content}
+            <div className="card card__panel" style={this.props.showingGraph ? {gridRow: "1 / 2"} : {gridRow: "1 / 4"}}>
+                <div className="panel__scroll" style={this.props.showingGraph ? {overflowY: "scroll"} : {overflowY: "hidden"}}>
+                    {content}
+                </div>
             </div>
         );
     }

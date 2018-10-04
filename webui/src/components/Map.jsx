@@ -31,7 +31,7 @@ class Map extends React.Component {
                     Object.keys(collection).map(k => {
                         let obj = collection[k];
                         if(!obj.length){ // not headers array, only row obj {}
-                            let {ica, part, traffic} = status[obj.id];
+                            let {ica, part, traffic, temp, humedad} = status[obj.id];
 
                             // turf.point
                             let feature = point([obj.longitude, obj.latitude], {
@@ -40,7 +40,9 @@ class Map extends React.Component {
                                 id: obj.id,
                                 name: obj.name,
                                 traffic,
-                                part
+                                part,
+                                temp,
+                                humedad
                             });
                             features.push(feature);
                         }
@@ -112,7 +114,7 @@ class Map extends React.Component {
             },
         }).then(response => response.json()
         ).then(response => {
-            console.log("response", response);
+            // console.log("response", response);
             callback(response);
         }).catch((e) => {
             console.log(`Error in fetch ${e.message}`);

@@ -97,7 +97,7 @@ body {
 
   .card__panel {
     grid-column: 2 / 3;
-    grid-row: 1 / 2;
+    /* grid-row: 1 / 2; */
   }
 }
 
@@ -106,8 +106,21 @@ body {
   width: 100%;
 }
 
+.card__graph {
+  position: relative;
+}
+
 .card__graph p {
   font-size: 2em;
+}
+
+.card__graph #close {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
 }
 
 #graph .line {
@@ -133,6 +146,11 @@ body {
   text-align: center;
   text-transform: uppercase;
   margin: 0 36px;
+}
+
+.card__panel .panel__scroll {
+  height: 88%;
+  overflow-y: scroll;
 }
 
 .card__panel .panel__location {
@@ -192,6 +210,7 @@ body {
 
 .card__panel #part_small {
   position: relative;
+  margin-bottom: 30px;
 }
 
 .card__panel #part_small a{

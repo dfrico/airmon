@@ -53,12 +53,12 @@ class Web extends React.Component {
                 <div className="card__container">
                     <Map theme={this.state.theme} setStore={this.setStore.bind(this)}></Map>
                     <Panel zone={this.state.station} setStore={this.setStore.bind(this)} showingGraph={this.state.showGraph}></Panel>
-                    {this.state.showGraph ? <Graph zone={this.state.station}></Graph> : ""}
+                    {this.state.showGraph ? <Graph zone={this.state.station} setStore={this.setStore.bind(this)}></Graph> : ""}
                 </div>
-                <label className="switch">
+                {/*<label className="switch">
                     <input type="checkbox" onChange={this.changeTheme.bind(this)}/>
                     <span className="slider round"></span>
-                </label>
+                </label>*/}
             </div>
         );
     }

@@ -73,7 +73,6 @@ class Graph extends React.Component {
             // height = 500 - margin.top - margin.bottom;
             height = d3.select(".card__graph").node().clientHeight-40,
             duration = 250;
-        console.log(width, height);
 
         let lineOpacity = "0.25";
         let lineOpacityHover = "0.85";
@@ -87,7 +86,6 @@ class Graph extends React.Component {
         let circleRadiusHover = 6;
 
         this.getData(this.props.zone, {time: "24h"}, (payload) => {
-            console.log(payload);
             let data = [{
                 name: "ICA",
                 values: [
@@ -263,6 +261,11 @@ class Graph extends React.Component {
             });
     }
 
+    close() {
+        d3.select("#graph>svg").remove();
+        this.props.setStore({showGraph: false});
+    }
+
     componentDidUpdate() {
         d3.select("#graph>svg").remove();
         // this.drawGraph();
@@ -281,6 +284,15 @@ class Graph extends React.Component {
         return (
             <div className="card card__graph">
                 {content}
+                <svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"viewBox="0 0 60 60" id="close" onClick={() => this.close()}>
+                    <g id="X">
+                        <line id="_x5C_" fill="none" stroke="black" strokeWidth="10" transform="translate(5, 5)" strokeMiterlimit="10" x1="5" y1="5" x2="50" y2="50" strokeLinecap="round"/>
+                        <line id="_x2F_" fill="none" stroke="black" strokeWidth="10" transform="translate(5, 5)" strokeMiterlimit="10" x1="5" y1="50" x2="50" y2="5" strokeLinecap="round"/>
+                    </g>
+                    <g id="circle">
+                        <circle id="XMLID_16_" opacity="0" fill="none" strokeWidth="3" stroke="black" strokeMiterlimit="10" cx="30" cy="30" r="40"/>
+                    </g>
+                </svg>
             </div>
         );
     }
